@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(cpp-network-lessons)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+
+if (WIN32)
+    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib;.a;${CMAKE_FIND_LIBRARY_SUFFIXES}")
+else()
+# BUGGY!
+#    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a;${CMAKE_FIND_LIBRARY_SUFFIXES}")
+endif()
+
+set(Boost_USE_STATIC_LIBS ON)
+set(LINK_SEARCH_START_STATIC ON)
+#set(LINK_SEARCH_END_STATIC ON)
+set(BUILD_SHARED_LIBS OFF)
+# set(CMAKE_EXE_LINKER_FLAGS "-static")
+
+file(GLOB lessons LIST_DIRECTORIES true "l[1-9]")
+add_subdirectory("socket_wrapper")
+
+foreach(lesson ${lessons})
+  add_subdirectory("${lesson}")
+endforeach()
+
