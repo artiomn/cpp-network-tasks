@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  gb:
+    image: "artiomn/gb-build-image"
+    network_mode: host
+    environment:
+      - EXT_UID=1000
+      - EXT_GID=1000
+    working_dir: /usr/src/gb
+    volumes:
+      - .:/usr/src/gb
+
