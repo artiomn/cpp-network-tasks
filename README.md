@@ -153,4 +153,18 @@ int main()
 Запустить вы их можете напрямую, однако из-за отсутствующих в системе зависимостей работать может не всё.
 Поэтому, запуск также производится в контейнере, используя команду `./run`, которой передаются необходимые приложению аргументы и путь к нему.
 
+Пример:
 
+```
+➭ ./run sudo ./build/bin/ping google.com
+Pinging "google.com" [64.233.165.113]
+Start to sending packets...
+Sending packet 0 to "google.com" request with id = 29
+Receiving packet 0 from "google.com" response with id = 29, time = 15.5ms
+```
+
+
+### Как запустить консоль?
+
+- `./run`
+- `docker-compose run --rm gb` - для тех, кто пользуется docker-compose.
