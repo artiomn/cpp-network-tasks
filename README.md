@@ -1,6 +1,6 @@
 # Repository with a code for the ![Geekbrains](https://frontend-scripts.hb.bizmrg.com/unique-hf/svg/logo.svg) students
 
-Это репозиторий, содержащий код задания для студентов, проходящих курс "Сетевое программирование на C++" в GeekBrains.
+Это репозиторий, содержащий код для студентов, проходящих курс "Сетевое программирование на C++" в GeekBrains.
 
 - [Начало работы](#начало-работы)
 - [FAQ](#faq)
