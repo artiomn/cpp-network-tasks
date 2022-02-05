@@ -20,7 +20,7 @@ Socket::Socket(int domain, int type, int protocol) : socket_descriptor_(INVALID_
 }
 
 
-Socket::Socket(int socket_descriptor) : socket_descriptor_(socket_descriptor)
+Socket::Socket(SocketdecriptorType socket_descriptor) : socket_descriptor_(socket_descriptor)
 {
 }
 

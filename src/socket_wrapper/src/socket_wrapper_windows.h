@@ -20,10 +20,10 @@ public:
     {
         WSADATA wsaData;
         // Initialize Winsock
-        result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+        auto result = WSAStartup(MAKEWORD(2, 2), &wsaData);
         if (result != 0)
         {
-            throw std::runtime_error();
+            throw std::runtime_error(get_last_error_string());
         }
     }
 
@@ -45,8 +45,8 @@ public:
     std::string get_last_error_string() const
     {
         // return std::strerror(std::errno);
-        wchar_t *s = NULL;
-        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        char *s = NULL;
+        FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
             NULL, get_last_error_code(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&s, 0, NULL);
         std::string result{s};
         LocalFree(s);
