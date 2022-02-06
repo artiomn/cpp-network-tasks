@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
-
 project(socket-wrapper C CXX)
 
 file(GLOB ${PROJECT_NAME}_SRC "src/*.*")

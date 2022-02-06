@@ -12,6 +12,9 @@
 
 int print_ips_with_getaddrinfo(const std::string &host_name)
 {
+    // Need for Windows initialization.
+    socket_wrapper::SocketWrapper sock_wrap;
+
     std::cout
         << "Getting name for \"" << host_name << "\"...\n"
         << "Using getaddrinfo() function." << std::endl;
@@ -53,9 +56,7 @@ int print_ips_with_getaddrinfo(const std::string &host_name)
             std::cout << "AF_INET\n";
             sockaddr_in const * const sin = reinterpret_cast<const sockaddr_in* const>(s->ai_addr);
             std::cout << "Address length: " << sizeof(sin->sin_addr) << "\n";
-            in_addr addr = { .s_addr = *reinterpret_cast<const in_addr_t*>(&sin->sin_addr) };
-
-            std::cout << "IP Address: " << inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN) << "\n";
+            std::cout << "IP Address: " << inet_ntop(AF_INET, &(sin->sin_addr), ip, INET_ADDRSTRLEN) << "\n";
         }
         else if (AF_INET6 == s->ai_family)
         {

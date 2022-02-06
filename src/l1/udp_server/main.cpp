@@ -10,10 +10,10 @@
 
 
 // Trim from end (in place).
-static inline void rtrim(std::string &s)
+static inline std::string& rtrim(std::string& s)
 {
-    s.erase(std::find_if(s.rbegin(), s.rend(),
-            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+   // s.erase(s.rend(), std::find_if(s.rbegin(), s.rend(), [](int c) {return !std::isspace(c); }));
+    return s;
 }
 
 
@@ -44,8 +44,9 @@ int main(int argc, char const *argv[])
     {
         .sin_family = PF_INET,
         .sin_port = htons(port),
-        .sin_addr = {.s_addr = INADDR_ANY}
     };
+
+    addr.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(sock, reinterpret_cast<const sockaddr*>(&addr), sizeof(addr)) != 0)
     {
@@ -62,6 +63,7 @@ int main(int argc, char const *argv[])
     ssize_t recv_len = 0;
 
     std::cout << "Running echo server...\n" << std::endl;
+    char client_address_buf[INET_ADDRSTRLEN];
 
     while (true)
     {
@@ -75,7 +77,7 @@ int main(int argc, char const *argv[])
             buffer[recv_len] = '\0';
             std::cout
                 << "Client with address "
-                << inet_ntoa(client_address.sin_addr)
+                << inet_ntop(AF_INET, &client_address.sin_addr, client_address_buf, sizeof(client_address_buf) / sizeof(client_address_buf[0]))
                 << ":" << client_address.sin_port
                 << " sent datagram "
                 << "[length = "

@@ -87,7 +87,7 @@ typedef struct ip_hdr
 class PingPacket
 {
 public:
-    typedef std::vector<uint8_t> BufferType;
+    typedef std::vector<char> BufferType;
 
 public:
     // Zero packet constructor. Need for recv.
@@ -130,7 +130,7 @@ public:
     uint16_t checksum() const
     {
         const uint16_t *buf = reinterpret_cast<const uint16_t*>(data_buffer_.data());
-        long int len = data_buffer_.size();
+        size_t len = data_buffer_.size();
         uint32_t sum = 0;
 
         for (sum = 0; len > 1; len -= 2) sum += *buf++;
@@ -175,7 +175,7 @@ public:
 private:
     icmphdr *get_header_from_buffer() const
     {
-        return reinterpret_cast<icmphdr*>(const_cast<uint8_t*>(data_buffer_.data()));
+        return reinterpret_cast<icmphdr*>(const_cast<BufferType::value_type* > (data_buffer_.data()));
     }
 
     void create_new_packet(uint16_t packet_id, uint16_t packet_sequence_number)
@@ -237,12 +237,12 @@ private:
 
 void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, const struct sockaddr_in &host_address)
 {
-    int ttl_val = 255, msg_count=0, i, flag=1, hdr, msg_received_count=0;
+    int ttl_val = 255, msg_count = 0, flag = 1, msg_received_count = 0;
 
     struct timeval tv =
     {
-        .tv_sec = std::chrono::seconds(recv_timeout).count(),
-        .tv_usec = (std::chrono::milliseconds(recv_timeout) - std::chrono::milliseconds(std::chrono::seconds(recv_timeout))).count()
+        .tv_sec = (long int)(std::chrono::seconds(recv_timeout).count()),
+        .tv_usec = (long int)((std::chrono::milliseconds(recv_timeout) - std::chrono::milliseconds(std::chrono::seconds(recv_timeout))).count())
     };
     struct sockaddr_in r_addr;
 
@@ -251,7 +251,7 @@ void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, 
     // Possible to disable IP header:
     // setsockopt(sock, 0, IP_HDRINCL, &flag, sizeof(flag));
     // Set socket options at ip to TTL and value to 64,.
-    if (setsockopt(sock, SOL_IP, IP_TTL, &ttl_val, sizeof(ttl_val)) != 0)
+    if (setsockopt(sock, IPPROTO_IP, IP_TTL, reinterpret_cast<const char*>(&ttl_val), sizeof(ttl_val)) != 0)
     {
         throw std::runtime_error("TTL setting failed!");
     }
@@ -278,7 +278,7 @@ void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, 
             << ntohs(request_echo_header.id)
             << std::endl;
 
-        if (sendto(sock, request, request.size(), 0, reinterpret_cast<const struct sockaddr*>(&host_address),
+        if (sendto(sock, static_cast<const char*>(request), request.size(), 0, reinterpret_cast<const struct sockaddr*>(&host_address),
             sizeof(host_address)) < request.size())
         {
             std::cerr << "Packet sending failed: \"" << "\"" << std::endl;
@@ -292,7 +292,7 @@ void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, 
         r_addr.sin_family = AF_INET;
         r_addr.sin_addr = host_address.sin_addr;
 
-        std::vector<uint8_t> buffer;
+        std::vector<char> buffer;
 
         buffer.resize(ping_packet_size + 20);
         auto start_time = std::chrono::steady_clock::now();
@@ -356,9 +356,10 @@ int main(int argc, const char *argv[])
     {
         .sin_family = static_cast<short unsigned>(remote_host->h_addrtype),
         // Automatic port number.
-        .sin_port = htons(0),
-        .sin_addr = { .s_addr = *reinterpret_cast<const in_addr_t*>(remote_host->h_addr) }
+        .sin_port = htons(0)
     };
+
+    addr.sin_addr.s_addr = *reinterpret_cast<const in_addr_t*>(remote_host->h_addr);
 
     std::cout << "Pinging \"" << remote_host->h_name << "\" [" << inet_ntoa(addr.sin_addr) << "]" << std::endl;
 

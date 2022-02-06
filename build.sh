@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # cmake -B build -DCMAKE_CROSSCOMPILING=True -DCMAKE_TOOLCHAIN_FILE=win.toolchain.cmake src
-export CC=/usr/local/bin/gcc
-export CXX=/usr/local/bin/g++
+export CC=gcc
+export CXX=g++
 #export CC=clang
 #export CXX=clang++
 

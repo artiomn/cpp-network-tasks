@@ -9,7 +9,7 @@ class Socket
 {
 public:
     Socket(int domain, int type, int protocol);
-    Socket(SocketdecriptorType socket_descriptor);
+    Socket(SocketDescriptorType socket_descriptor);
     virtual ~Socket();
 
 public:
@@ -17,14 +17,14 @@ public:
 
 public:
     operator bool() const { return opened(); }
-    operator SocketdecriptorType() const { return socket_descriptor_; }
+    operator SocketDescriptorType() const { return socket_descriptor_; }
 
 protected:
     void open(int domain, int type, int protocol);
     int close();
 
 private:
-    SocketdecriptorType socket_descriptor_;
+    SocketDescriptorType socket_descriptor_;
 };
 
 } // socket_wrapper
