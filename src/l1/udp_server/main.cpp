@@ -68,7 +68,7 @@ int main(int argc, char const *argv[])
     while (true)
     {
         // Read content into buffer from an incoming client.
-        recv_len = recvfrom(sock, buffer, sizeof(buffer), 0,
+        recv_len = recvfrom(sock, buffer, sizeof(buffer) - 1, 0,
                             reinterpret_cast<sockaddr *>(&client_address),
                             &client_address_len);
 
