@@ -238,11 +238,13 @@ private:
 void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, const struct sockaddr_in &host_address)
 {
     int ttl_val = 255, msg_count = 0, flag = 1, msg_received_count = 0;
+    using namespace std::chrono;
 
     struct timeval tv =
     {
-        .tv_sec = (long int)(std::chrono::seconds(recv_timeout).count()),
-        .tv_usec = (long int)((std::chrono::milliseconds(recv_timeout) - std::chrono::milliseconds(std::chrono::seconds(recv_timeout))).count())
+        .tv_sec = std::chrono::duration<long>(duration_cast<seconds>(recv_timeout)).count(),
+        // Ugly, but it will works.
+        .tv_usec = (long)(duration_cast<microseconds>(recv_timeout) - microseconds(duration_cast<seconds>(recv_timeout))).count()
     };
     struct sockaddr_in r_addr;
 
@@ -250,7 +252,7 @@ void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, 
 
     // Possible to disable IP header:
     // setsockopt(sock, 0, IP_HDRINCL, &flag, sizeof(flag));
-    // Set socket options at ip to TTL and value to 64,.
+    // Set socket TTL value.
     if (setsockopt(sock, IPPROTO_IP, IP_TTL, reinterpret_cast<const char*>(&ttl_val), sizeof(ttl_val)) != 0)
     {
         throw std::runtime_error("TTL setting failed!");
@@ -261,6 +263,12 @@ void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, 
     {
         throw std::runtime_error("Recv timeout setting failed!");
     }
+
+    std::cout
+        << "TTL = " << ttl_val << "\n"
+        << "Recv timeout seconds = " << tv.tv_sec << "\n"
+        << "Recv timeout microseconds = " << tv.tv_usec
+        << std::endl;
 
     // send ICMP packet in an infinite loop
     while(true)
