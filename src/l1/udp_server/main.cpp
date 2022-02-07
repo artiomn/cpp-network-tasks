@@ -78,7 +78,7 @@ int main(int argc, char const *argv[])
             std::cout
                 << "Client with address "
                 << inet_ntop(AF_INET, &client_address.sin_addr, client_address_buf, sizeof(client_address_buf) / sizeof(client_address_buf[0]))
-                << ":" << client_address.sin_port
+                << ":" << ntohs(client_address.sin_port)
                 << " sent datagram "
                 << "[length = "
                 << recv_len
