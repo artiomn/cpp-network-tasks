@@ -36,6 +36,10 @@
 - Для сборки используйте [CMake](https://cmake.org/).
 - Оформите код согласно кодовому стилю.
 
+Подходящий вариант стиля для [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) находится в репозитории: [code-style.clang-format](code-style.clang-format).
+
+\* Файл стиля был предоставлен Henryk ll Selenya.
+
 Пример оформления вы увидите [в примерах к уроку](src/l1).
 
 Кратко:
