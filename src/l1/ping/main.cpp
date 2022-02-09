@@ -250,9 +250,6 @@ void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, 
 
     PingPacketFactory ping_factory;
 
-    // Possible to disable IP header:
-    // setsockopt(sock, 0, IP_HDRINCL, &flag, sizeof(flag));
-    // Set socket TTL value.
     if (setsockopt(sock, IPPROTO_IP, IP_TTL, reinterpret_cast<const char*>(&ttl_val), sizeof(ttl_val)) != 0)
     {
         throw std::runtime_error("TTL setting failed!");
