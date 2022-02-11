@@ -240,12 +240,17 @@ void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, 
     int ttl_val = 255, msg_count = 0, flag = 1, msg_received_count = 0;
     using namespace std::chrono;
 
+#if !defined(WIN32)
     struct timeval tv =
     {
         .tv_sec = std::chrono::duration<long>(duration_cast<seconds>(recv_timeout)).count(),
         // Ugly, but it will works.
         .tv_usec = (long)(duration_cast<microseconds>(recv_timeout) - microseconds(duration_cast<seconds>(recv_timeout))).count()
     };
+#else
+    auto tv = duration_cast<milliseconds>(recv_timeout).count();
+#endif
+
     struct sockaddr_in r_addr;
 
     PingPacketFactory ping_factory;
@@ -262,10 +267,18 @@ void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, 
     }
 
     std::cout
-        << "TTL = " << ttl_val << "\n"
+        << "TTL = " << ttl_val << "\n";
+
+#if !defined(WIN32)
+    std::cout
         << "Recv timeout seconds = " << tv.tv_sec << "\n"
         << "Recv timeout microseconds = " << tv.tv_usec
         << std::endl;
+#else
+    std::cout
+        << "Recv timeout seconds = " << tv << " ms\n"
+        << std::endl;
+#endif
 
     // send ICMP packet in an infinite loop
     while(true)
