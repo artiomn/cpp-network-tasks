@@ -7,7 +7,7 @@ extern "C"
 #    include <winsock2.h>
 
 	/* See http://stackoverflow.com/questions/12765743/getaddrinfo-on-win32 */
-#    ifndef _WIN32_WINNT
+#    if !defined(_WIN32_WINNT)
 #        define _WIN32_WINNT 0x0501  /* Windows XP. */
 #    endif
 typedef SOCKET SocketDescriptorType;
@@ -26,12 +26,12 @@ typedef int SocketDescriptorType;
 #endif
 
 // Defined for Windows Sockets.
-#if not defined(INVALID_SOCKET)
+#if !defined(INVALID_SOCKET)
 #    define INVALID_SOCKET (-1)
 #endif
 
 // Defined for Windows Sockets.
-#if not defined(SOCKET_ERROR)
+#if !defined(SOCKET_ERROR)
 #    define SOCKER_ERROR (-1)
 #endif
 

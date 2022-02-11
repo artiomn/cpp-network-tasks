@@ -19,9 +19,11 @@ public:
     operator bool() const { return opened(); }
     operator SocketDescriptorType() const { return socket_descriptor_; }
 
+public:
+    int close();
+
 protected:
     void open(int domain, int type, int protocol);
-    int close();
 
 private:
     SocketDescriptorType socket_descriptor_;
