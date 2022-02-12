@@ -56,7 +56,7 @@ private:
     const socket_wrapper::SocketWrapper &sock_wrap_;
     socket_wrapper::Socket sock_;
 
-	std::ofstream of_;
+    std::ofstream of_;
     std::atomic<bool> started_ = false;
     bool initialized_ = false;
 };
