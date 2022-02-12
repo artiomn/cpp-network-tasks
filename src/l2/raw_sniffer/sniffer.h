@@ -23,15 +23,14 @@ public:
 #if defined(WIN32)
         sock_(AF_INET, SOCK_RAW, IPPROTO_IP),
 #else
-        sock_(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)),
+        sock_(AF_PACKET, SOCK_RAW, htons(ETH_P_IP)),
 #endif
+        // Open and overwrite capture file stream.
         of_(pcap_filename_, std::ios_base::binary)
     {
         init();
     }
-    //socket_wrapper::Socket sock = {AF_INET, SOCK_RAW, IPPROTO_IP};
-    //socket_wrapper::Socket sock = {AF_PACKET, SOCK_RAW, htons(ETH_P_ALL)};
-    //socket_wrapper::Socket sock = {AF_INET, SOCK_RAW, 0};
+
     ~Sniffer();
 
 public:
@@ -49,13 +48,14 @@ protected:
     bool write_pcap_header();
 
 private:
+    const size_t ethernet_proto_type_offset = 12;
+
     const std::string if_name_;
     const std::string pcap_filename_;
     const socket_wrapper::SocketWrapper &sock_wrap_;
     socket_wrapper::Socket sock_;
-	// Open our capture file, overwrite if it already exists.
+
 	std::ofstream of_;
     std::atomic<bool> started_ = false;
     bool initialized_ = false;
 };
-

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-// We use defines and structures copied from libpcap to synthesize a PCAP file.
+// Copied from libpcap to synthesize a PCAP file.
 const auto PCAP_VERSION_MAJOR = 2;
 const auto PCAP_VERSION_MINOR = 4;
 const auto DLT_EN10MB = 1;
@@ -39,6 +39,10 @@ const auto BUFFER_SIZE_IP = BUFFER_SIZE_PKT - BUFFER_SIZE_ETH;
 const auto BUFFER_OFFSET_ETH = sizeof(pcap_sf_pkthdr);
 const auto BUFFER_OFFSET_IP = BUFFER_OFFSET_ETH + BUFFER_SIZE_ETH;
 
-// A couple of defines used to calculate high resolution timestamps.
-#define EPOCH_BIAS 116444736000000000
-#define UNITS_PER_SEC  10000000
+#if defined(WIN32)
+const auto BUFFER_WRITE_OFFSET = BUFFER_OFFSET_IP;
+const auto BUFFER_ADD_HEADER_SIZE = BUFFER_SIZE_ETH;
+#else
+const auto BUFFER_WRITE_OFFSET = BUFFER_OFFSET_ETH;
+const auto BUFFER_ADD_HEADER_SIZE = BUFFER_SIZE_ETH;
+#endif

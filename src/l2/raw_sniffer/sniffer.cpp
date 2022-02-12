@@ -196,14 +196,12 @@ bool Sniffer::capture()
     // First 14 bytes are a fake ethernet header with IPv4 as the protocol.
     // `char` type is using for the compatibility with Windows.
     char buffer[BUFFER_SIZE_HDR + BUFFER_SIZE_PKT] = {0};
-    buffer[BUFFER_OFFSET_ETH + 12] = 0x08;
+    // 0x08 - IP protocol type in the Ethernet frame protocolol type field (offset = 12).
+    buffer[BUFFER_OFFSET_ETH + ethernet_proto_type_offset] = 0x08;
     struct pcap_sf_pkthdr* pkt = reinterpret_cast<struct pcap_sf_pkthdr*>(buffer);
 
-    // Reuse this on each loop to calculate a high resolution timestamp.
-    std::uint64_t ft_64;
-
     // Read the next packet, blocking forever.
-    int rc = recv(sock_, buffer + BUFFER_OFFSET_IP, BUFFER_SIZE_IP, 0);
+    int rc = recv(sock_, buffer + BUFFER_WRITE_OFFSET, BUFFER_SIZE_IP, 0);
 
     if (INVALID_SOCKET == rc)
     {
@@ -216,19 +214,19 @@ bool Sniffer::capture()
 
     std::cout << rc << " bytes received..." << std::endl;
     // Calculate timestamp for this packet.
-    ft_64 = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    ft_64 -= EPOCH_BIAS;
-    time_t ctime = (time_t) (ft_64 / UNITS_PER_SEC);
-    uint32_t ms = ft_64 % UNITS_PER_SEC;
+    time_t ft_64 = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    time_t ctime = ft_64;
+    uint32_t ms = ft_64;
 
     // Set out PCAP packet header fields.
     pkt->ts.tv_sec = ctime;
     pkt->ts.tv_usec = ms;
-    pkt->caplen = rc + BUFFER_SIZE_ETH;
-    pkt->len = rc + BUFFER_SIZE_ETH;
+    pkt->caplen = rc + BUFFER_ADD_HEADER_SIZE;
+    pkt->len = rc + BUFFER_ADD_HEADER_SIZE;
 
-    // Output our packet data and header in a single write.
-    of_.write(reinterpret_cast<const char*>(buffer), rc + BUFFER_SIZE_ETH + BUFFER_SIZE_HDR);
+    // Write packet.
+    of_.write(reinterpret_cast<const char*>(buffer), rc + BUFFER_SIZE_HDR + BUFFER_ADD_HEADER_SIZE);
     of_.flush();
 
     return true;
