@@ -215,9 +215,9 @@ bool Sniffer::capture()
     // Calculate timestamp for this packet.
     //auto cur_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     using namespace std::chrono;
-    auto cur_time = duration_cast<microseconds>(time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch());
+    auto cur_time = duration_cast<microseconds>(time_point_cast<microseconds>(system_clock::now()).time_since_epoch());
     auto t_s = seconds(duration_cast<seconds>(cur_time));
-    auto u_s = cur_time - t_s;
+    auto u_s = cur_time - duration_cast<microseconds>(t_s);
 
     // Set out PCAP packet header fields.
     pkt->ts.tv_sec = t_s.count();
