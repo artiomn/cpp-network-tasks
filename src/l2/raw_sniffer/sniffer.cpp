@@ -47,7 +47,7 @@ auto get_if_address(const std::string& if_name, int sock)
     struct sockaddr_ll iface_addr =
     {
         .sll_family = AF_PACKET,
-        .sll_protocol = htons(ETH_P_ALL),
+        .sll_protocol = htons(ETH_P_IP),
         .sll_ifindex = get_if_index(if_name, sock),
         // Captured IP packets sent and received by the network interface the
         // specified IP address is associated with.
