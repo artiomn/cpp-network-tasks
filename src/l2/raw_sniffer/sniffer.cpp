@@ -64,7 +64,6 @@ auto get_if_address(const std::string& if_name, int sock)
 
     return sa;
 }
-
 #endif
 
 
@@ -214,14 +213,15 @@ bool Sniffer::capture()
 
     std::cout << rc << " bytes received..." << std::endl;
     // Calculate timestamp for this packet.
-    time_t ft_64 = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-    time_t ctime = ft_64;
-    uint32_t ms = ft_64;
+    //auto cur_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    using namespace std::chrono;
+    auto cur_time = duration_cast<microseconds>(time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch());
+    auto t_s = seconds(duration_cast<seconds>(cur_time));
+    auto u_s = cur_time - t_s;
 
     // Set out PCAP packet header fields.
-    pkt->ts.tv_sec = ctime;
-    pkt->ts.tv_usec = ms;
+    pkt->ts.tv_sec = t_s.count();
+    pkt->ts.tv_usec = u_s.count();
     pkt->caplen = rc + BUFFER_ADD_HEADER_SIZE;
     pkt->len = rc + BUFFER_ADD_HEADER_SIZE;
 

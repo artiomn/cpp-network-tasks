@@ -8,7 +8,8 @@
 #include <socket_wrapper/socket_headers.h>
 
 #if !defined(WIN32)
-#    include <netinet/if_ether.h>	//For ETH_P_ALL
+//For ETH_P_ALL, ETH__P_IP, etc...
+#    include <netinet/if_ether.h>
 #endif
 
 #include <socket_wrapper/socket_wrapper.h>
