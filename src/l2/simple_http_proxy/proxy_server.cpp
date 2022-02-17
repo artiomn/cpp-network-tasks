@@ -245,7 +245,7 @@ socket_wrapper::Socket ProxyServer::connect_to_target_server(const std::string &
             std::cout << "Trying IPv6 Address: " << inet_ntop(AF_INET6, &(sin->sin6_addr), ip6, INET6_ADDRSTRLEN) << std::endl;
             socket_wrapper::Socket s = {AF_INET6, SOCK_STREAM, IPPROTO_TCP};
 
-            if (try_to_connect(s, reinterpret_cast<const sockaddr*>(sin), sizeof(sockaddr_in)))
+            if (try_to_connect(s, reinterpret_cast<const sockaddr*>(sin), sizeof(sockaddr_in6)))
             {
                 return s;
             }
@@ -343,7 +343,7 @@ void ProxyServer::proxify(socket_wrapper::Socket client_socket)
             << std::endl;
 
         // Create new connection with server.
-         auto&& proxy_to_server_socket = connect_to_target_server(host_name, port);
+        auto&& proxy_to_server_socket = connect_to_target_server(host_name, port);
 
         std::cout
             << "Connected.\n\n"
