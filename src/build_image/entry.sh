@@ -5,8 +5,13 @@ SOURCE_PATH="${SOURCE_PATH:-/usr/src/gb}"
 USER_NAME="${USER_NAME:-developer}"
 export DISPLAY=":0"
 
-groupadd -g "${EXT_GID}" "${USER_NAME}" && \
-    useradd -m -u "${EXT_UID}" -g "${EXT_GID}" -Gsudo,root "${USER_NAME}" && \
-    chown "${USER_NAME}:${USER_NAME}" "${SOURCE_PATH}" && \
-    echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> "/etc/sudoers.d/${USER_NAME}" && \
-    exec gosu "${USER_NAME}" "$@"
+if [ "${EXT_UID}" -ne 0 ]; then
+
+    groupadd -g "${EXT_GID}" "${USER_NAME}" && \
+        useradd -m -u "${EXT_UID}" -g "${EXT_GID}" -Gsudo,root "${USER_NAME}" && \
+        chown "${USER_NAME}:${USER_NAME}" "${SOURCE_PATH}" && \
+        echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> "/etc/sudoers.d/${USER_NAME}" && \
+        exec gosu "${USER_NAME}" "$@"
+fi
+
+exec "$@"

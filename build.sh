@@ -6,5 +6,5 @@ export CXX=g++
 #export CC=clang
 #export CXX=clang++
 
-cmake -DCMAKE_BUILD_TYPE=Debug -B build src
+cmake -B build src
 VERBOSE=1 cmake --build build --parallel  # --clean-first

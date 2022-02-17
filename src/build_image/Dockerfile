@@ -49,6 +49,12 @@ RUN apt-get update \
   && cmake --install build --prefix "/usr/local" \
   && cd / \
   && rm -rf restbed \
+  && git clone --recursive --depth 1 https://github.com/Thalhammer/jwt-cpp \
+  && cd jwt-cpp \
+  && cmake -B build -DBUILD_SSL=YES -DBUILD_TESTS=NO -DCMAKE_INSTALL_PREFIX=/usr/local . \
+  && cmake --build build --parallel \
+  && cmake --install build --prefix "/usr/local" \
+  && rm -rf jwt-cpp \
   && apt-get clean
 
 COPY ./entry.sh /
