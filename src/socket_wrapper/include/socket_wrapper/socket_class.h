@@ -10,6 +10,12 @@ class Socket
 public:
     Socket(int domain, int type, int protocol);
     Socket(SocketDescriptorType socket_descriptor);
+
+    Socket(const Socket&) = delete;
+    Socket(Socket &&s);
+    Socket &operator=(const Socket &s) = delete;
+    Socket &operator=(Socket &&s);
+
     virtual ~Socket();
 
 public:

@@ -1,6 +1,7 @@
 #include <socket_wrapper/socket_class.h>
 #include <socket_wrapper/socket_headers.h>
 
+#include <utility>
 
 #ifdef _WIN32
     constexpr auto close_type = SD_BOTH;
@@ -22,6 +23,24 @@ Socket::Socket(int domain, int type, int protocol) : socket_descriptor_(INVALID_
 
 Socket::Socket(SocketDescriptorType socket_descriptor) : socket_descriptor_(socket_descriptor)
 {
+}
+
+
+Socket::Socket(Socket &&s)
+{
+    socket_descriptor_ = s.socket_descriptor_;
+    s.socket_descriptor_ = INVALID_SOCKET;
+}
+
+
+Socket &Socket::operator=(Socket &&s)
+{
+    if (&s == this) return *this;
+
+    if (opened()) close();
+    std::swap(socket_descriptor_, s.socket_descriptor_);
+
+    return *this;
 }
 
 
@@ -47,12 +66,6 @@ void Socket::open(int domain, int type, int protocol)
 int Socket::close()
 {
     int status = 0;
-
-    status = shutdown(socket_descriptor_, close_type);
-
-    if (status != 0)
-    {
-    }
 
     status = close_socket(socket_descriptor_);
     socket_descriptor_ = INVALID_SOCKET;
