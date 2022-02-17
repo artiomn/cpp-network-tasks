@@ -188,7 +188,7 @@ bool ProxyServer::try_to_connect(socket_wrapper::Socket &s, const sockaddr* sa, 
 }
 
 
-void ProxyServer::connect_to_target_server(const std::string &host_name, unsigned short port, socket_wrapper::Socket &sock)
+socket_wrapper::Socket ProxyServer::connect_to_target_server(const std::string &host_name, unsigned short port)
 {
     addrinfo hints =
     {
@@ -198,21 +198,22 @@ void ProxyServer::connect_to_target_server(const std::string &host_name, unsigne
         .ai_protocol = 0
     };
 
-    addrinfo *servinfo = nullptr;
+    addrinfo *s_i = nullptr;
     int status = 0;
-    bool connected = false;
 
-    if ((status = getaddrinfo(host_name.c_str(), nullptr, &hints, &servinfo)) != 0)
+    if ((status = getaddrinfo(host_name.c_str(), nullptr, &hints, &s_i)) != 0)
     {
         std::string msg{"getaddrinfo error: "};
         msg += gai_strerror(status);
         throw std::runtime_error(msg);
     }
 
-    for (auto const *s = servinfo; s != nullptr; s = s->ai_next)
-    {
-        assert(s->ai_family == s->ai_addr->sa_family);
+    std::unique_ptr<addrinfo, decltype(&freeaddrinfo)> servinfo{s_i, freeaddrinfo};
 
+    for (auto const *s = servinfo.get(); s != nullptr; s = s->ai_next)
+    {
+
+        assert(s->ai_family == s->ai_addr->sa_family);
         if (AF_INET == s->ai_family)
         {
             char ip[INET_ADDRSTRLEN];
@@ -225,11 +226,11 @@ void ProxyServer::connect_to_target_server(const std::string &host_name, unsigne
             sin->sin_port = htons(port);
 
             std::cout << "Trying IP Address: " << inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN) << std::endl;
+            socket_wrapper::Socket s = {AF_INET, SOCK_STREAM, IPPROTO_TCP};
 
-            if (try_to_connect(sock, reinterpret_cast<const sockaddr*>(sin), sizeof(sockaddr_in)))
+            if (try_to_connect(s, reinterpret_cast<const sockaddr*>(sin), sizeof(sockaddr_in)))
             {
-                connected = true;
-                break;
+                return s;
             }
         }
         else if (AF_INET6 == s->ai_family)
@@ -242,21 +243,16 @@ void ProxyServer::connect_to_target_server(const std::string &host_name, unsigne
             sin->sin6_port = htons(port);
 
             std::cout << "Trying IPv6 Address: " << inet_ntop(AF_INET6, &(sin->sin6_addr), ip6, INET6_ADDRSTRLEN) << std::endl;
-            if (try_to_connect(sock, reinterpret_cast<const sockaddr*>(sin), sizeof(sockaddr_in)))
+            socket_wrapper::Socket s = {AF_INET6, SOCK_STREAM, IPPROTO_TCP};
+
+            if (try_to_connect(s, reinterpret_cast<const sockaddr*>(sin), sizeof(sockaddr_in)))
             {
-                connected = true;
-                break;
+                return s;
             }
         }
     }  // for
 
-    freeaddrinfo(servinfo);
-
-    if (!connected)
-    {
-        std::string msg{"Connection error: "};
-        throw std::runtime_error(msg + sock_wrap_.get_last_error_string());
-    }
+    throw std::runtime_error("Connection error: " + sock_wrap_.get_last_error_string());
 }
 
 
@@ -340,8 +336,6 @@ void ProxyServer::proxify(socket_wrapper::Socket client_socket)
             << "============\n"
             << std::endl;
 
-        socket_wrapper::Socket proxy_to_server_socket = {AF_INET, SOCK_STREAM, IPPROTO_TCP};
-
         std::cout
             << "Connecting to host: \"" << host_name
             << ":" << port
@@ -349,14 +343,20 @@ void ProxyServer::proxify(socket_wrapper::Socket client_socket)
             << std::endl;
 
         // Create new connection with server.
-        connect_to_target_server(host_name, port, proxy_to_server_socket);
+         auto&& proxy_to_server_socket = connect_to_target_server(host_name, port);
 
         std::cout
             << "Connected.\n\n"
             << "Writing HTTP request to the target server..."
             << std::endl;
 
-        send(proxy_to_server_socket, &new_request.at(0), new_request.size(), 0);
+        if (send(proxy_to_server_socket, &new_request.at(0), new_request.size(), 0) < 0)
+        {
+            auto s = sock_wrap_.get_last_error_string();
+            std::cerr << s << std::endl;
+            client_error(client_socket, method, 503, "Internal error", s);
+            return;
+        }
 
         std::cout
             << "Request was written.\n\n"

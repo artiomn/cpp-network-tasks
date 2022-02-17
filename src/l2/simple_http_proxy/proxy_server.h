@@ -56,7 +56,7 @@ public:
 
 private:
 	bool try_to_connect(socket_wrapper::Socket &s, const sockaddr* sa, size_t sa_size);
-	void connect_to_target_server(const std::string &host_name, unsigned short port, socket_wrapper::Socket &s);
+	socket_wrapper::Socket connect_to_target_server(const std::string &host_name, unsigned short port);
 
 private:
     unsigned short port_;
