@@ -124,13 +124,13 @@ int main(int argc, const char * const argv[])
     while (true)
     {
         std::cout << "> " << std::flush;
-        std::getline(std::cin, request);
+        if (!std::getline(std::cin, request)) break;
 
         std::cout
             << "Sending request: \"" << request << "\"..."
             << std::endl;
 
-        request += "\n";
+        request += "\r\n";
 
         if (!send_request(sock, request))
         {
@@ -142,7 +142,7 @@ int main(int argc, const char * const argv[])
             << "Request was sent, reading response..."
             << std::endl;
 
-        std::this_thread::sleep_for(10ms);
+        std::this_thread::sleep_for(2ms);
 
         while (true)
         {
@@ -157,17 +157,17 @@ int main(int argc, const char * const argv[])
             {
                 buffer[recv_bytes] = '\0';
                 std::cout << "------------\n" << std::string(buffer.begin(), std::next(buffer.begin(), recv_bytes)) << std::endl;
+                continue;
             }
-            else
+            else if (-1 == recv_bytes)
             {
-                if (-1 == recv_bytes)
-                {
-                    if (EINTR == errno) continue;
-                    if (NOERROR == errno) continue;
-                    std::cerr << sock_wrap.get_last_error_string() << std::endl;
-                    break;
-                }
+                if (EINTR == errno) continue;
+                if (0 == errno) break;
+                // std::cerr << errno << ": " << sock_wrap.get_last_error_string() << std::endl;
+                break;
             }
+
+            break;
         }
     }
 }
