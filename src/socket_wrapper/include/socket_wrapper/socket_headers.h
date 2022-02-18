@@ -12,10 +12,13 @@ extern "C"
 #    endif
 typedef SOCKET SocketDescriptorType;
 typedef int ssize_t;
+typedef unsigned long IoctlType;
+
 #	if !defined(in_addr_t)
-#include <cinttypes>
+#		include <cinttypes>
 typedef uint32_t in_addr_t;
 #	endif
+
 #else
 /* Assume that any non-Windows platform uses POSIX-style sockets instead. */
 #    include <sys/socket.h>
@@ -23,6 +26,8 @@ typedef uint32_t in_addr_t;
 #    include <netdb.h>  /* Needed for getaddrinfo() and freeaddrinfo() */
 #    include <unistd.h> /* Needed for close() */
 typedef int SocketDescriptorType;
+typedef int IoctlType;
+
 #endif
 
 // Defined for Windows Sockets.
