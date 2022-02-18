@@ -146,7 +146,7 @@ int main(int argc, const char * const argv[])
 
         while (true)
         {
-            auto recv_bytes = recv(sock, buffer.data(), buffer.size(), 0);
+            auto recv_bytes = recv(sock, buffer.data(), buffer.size() - 1, 0);
 
             std::cout
                 << recv_bytes
