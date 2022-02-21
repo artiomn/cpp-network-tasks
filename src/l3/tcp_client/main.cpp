@@ -170,5 +170,7 @@ int main(int argc, const char * const argv[])
             break;
         }
     }
+
+    return EXIT_SUCCESS;
 }
 
