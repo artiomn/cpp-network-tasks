@@ -17,7 +17,6 @@ static inline std::string& rtrim(std::string& s)
 }
 
 
-
 int main(int argc, char const *argv[])
 {
 

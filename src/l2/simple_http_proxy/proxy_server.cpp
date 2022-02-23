@@ -195,13 +195,13 @@ socket_wrapper::Socket ProxyServer::connect_to_target_server(const std::string &
         .ai_flags= AI_CANONNAME,
         .ai_family = AF_UNSPEC,
         .ai_socktype = SOCK_STREAM,
-        .ai_protocol = 0
+        .ai_protocol = IPPROTO_TCP
     };
 
     addrinfo *s_i = nullptr;
     int status = 0;
 
-    if ((status = getaddrinfo(host_name.c_str(), nullptr, &hints, &s_i)) != 0)
+    if ((status = getaddrinfo(host_name.c_str(), std::to_string(port).c_str(), &hints, &s_i)) != 0)
     {
         std::string msg{"getaddrinfo error: "};
         msg += gai_strerror(status);

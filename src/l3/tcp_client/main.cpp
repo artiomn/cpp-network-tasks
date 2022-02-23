@@ -14,7 +14,7 @@ extern "C"
 {
 #   include <netinet/tcp.h>
 #   include <sys/ioctl.h>
-#   include <fcntl.h>
+// #   include <fcntl.h>
 }
 #endif
 
