@@ -455,11 +455,11 @@ public:
 
         std::cout << "\n" << active_descriptors << " descriptors active..." << std::endl;
         // Accept new connection, if it's possible.
-        if (FD_ISSET(server_socket_, &read_descriptors_set_)) process_new_client();
+        if (FD_ISSET(static_cast<SocketDescriptorType>(server_socket_), &read_descriptors_set_)) process_new_client();
 
         for (auto client_iter = clients_.begin(); client_iter != clients_.end();)
         {
-            if (FD_ISSET(*client_iter, &err_descriptors_set_))
+            if (FD_ISSET(static_cast<SocketDescriptorType>(*client_iter), &err_descriptors_set_))
             {
                 // Client socket error.
                 // remove_descriptor(*client_iter);
@@ -476,7 +476,7 @@ public:
                 continue;
             }
 
-            if (FD_ISSET(*client_iter, &read_descriptors_set_))
+            if (FD_ISSET(static_cast<SocketDescriptorType>(*client_iter), &read_descriptors_set_))
             {
                 std::cout << "Socket ready for reading: " << *client_iter << std::endl;
                 client_iter->update_file_path();
@@ -491,7 +491,7 @@ public:
                     continue;
                 }*/
 
-                if (FD_ISSET(client, &write_descriptors_set_))
+                if (FD_ISSET(static_cast<SocketDescriptorType>(client), &write_descriptors_set_))
                 {
                     std::cout << "Socket ready for writing: " << client << std::endl;
                     if (Transceiver::IOStatus::error == client.send_data()) throw std::logic_error("send data to socket");
