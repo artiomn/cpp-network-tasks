@@ -329,6 +329,8 @@ int main(int argc, const char * const argv[])
             throw std::logic_error("Listen error");
         }
 
+        std::cout << "Listen was run..." << std::endl;
+
         while (true)
         {
             auto client_sock = std::move(accept_client(server_sock));
