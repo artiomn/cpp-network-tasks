@@ -9,6 +9,7 @@ RUN apt-get update \
     clang \
     mingw-w64 \
     cmake \
+    gdb \
     gdbserver \
     gosu \
     libboost-all-dev \
@@ -24,8 +25,12 @@ RUN apt-get update \
     meson \
     netcat \
     net-tools \
+    python \
     rapidjson-dev \
+    rsync \
     sudo \
+    ssh \
+    tar \
     telnet \
     tcpdump \
     vim \
