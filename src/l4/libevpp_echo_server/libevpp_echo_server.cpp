@@ -168,6 +168,8 @@ public:
 
     static void signal_cb(ev::sig &signal, int revents)
     {
+        (void)revents;
+
         signal.loop.break_loop();
     }
 

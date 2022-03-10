@@ -297,7 +297,7 @@ int main(int argc, const char * const argv[])
 
     try
     {
-        auto servinfo = std::move(get_serv_info(argv[1]));
+        auto servinfo = get_serv_info(argv[1]);
         if (std::nullopt == servinfo)
         {
             exit(EXIT_FAILURE);
@@ -333,7 +333,7 @@ int main(int argc, const char * const argv[])
 
         while (true)
         {
-            auto client_sock = std::move(accept_client(server_sock));
+            auto client_sock = accept_client(server_sock);
 
             if (!client_sock)
             {

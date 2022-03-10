@@ -21,7 +21,6 @@ int main(int argc, const char * const argv[])
     }
 
     socket_wrapper::SocketWrapper sock_wrap;
-    sockaddr_in si_other;
 
     const int port { std::stoi(argv[1]) };
 

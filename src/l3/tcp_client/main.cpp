@@ -118,7 +118,6 @@ int main(int argc, const char * const argv[])
         return EXIT_FAILURE;
     }
 
-    ssize_t bytes_count = 0;
     std::cout << "Waiting for the user input..." << std::endl;
 
     while (true)

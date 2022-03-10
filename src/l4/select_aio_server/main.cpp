@@ -134,8 +134,8 @@ public:
 
 
 public:
-    Transceiver(socket_wrapper::Socket &&client_sock) : client_sock_(std::move(client_sock)), buffer_(buffer_size) {}
-    Transceiver(Transceiver&& t) : client_sock_(std::move(t.client_sock_)), buffer_(buffer_size) {}
+    Transceiver(socket_wrapper::Socket &&client_sock) : buffer_(buffer_size), client_sock_(std::move(client_sock)) {}
+    Transceiver(Transceiver&& t) : buffer_(buffer_size), client_sock_(std::move(t.client_sock_)) {}
     Transceiver(const Transceiver&) = delete;
     Transceiver() = delete;
     ~Transceiver()
@@ -145,15 +145,13 @@ public:
 
 public:
     const socket_wrapper::Socket &ts_socket() const { return client_sock_; }
-    const int file_descriptor() const { return file_descriptor_; }
+    int file_descriptor() const { return file_descriptor_; }
 
 public:
     IOStatus send_buffer()
     {
         assert(true == static_cast<bool>(client_sock_));
         if (buffer_index_ <= 0) return IOStatus::no_data;
-
-        const auto size = buffer_.size();
 
         while (true)
         {
@@ -405,7 +403,7 @@ private:
 
     void process_new_client()
     {
-        auto client_sock = std::move(accept_client(server_socket_));
+        auto client_sock = accept_client(server_socket_);
 
         if (!client_sock)
         {
@@ -560,7 +558,7 @@ int main(int argc, const char * const argv[])
 
     try
     {
-        auto servinfo = std::move(get_serv_info(argv[1]));
+        auto servinfo = get_serv_info(argv[1]);
         if (std::nullopt == servinfo)
         {
             return EXIT_FAILURE;
