@@ -10,6 +10,10 @@
   * [Где все примеры?](#где-все-примеры)
   * [Как собрать примеры?](#как-собрать-примеры)
   * [Docker - что это?](#docker---что-это)
+    - [Как использовать docker?](#как-использовать-docker)
+    - [Могу ли я собирать в IDE?](#могу-ли-я-собирать-в-ide)
+    - [Не могу подключиться к Docker либо IDE его не видит, что делать?](#не-могу-подключиться-к-docker-либо-ide-его-не-видит-что-делать)
+    - [В образе чего-то не хватает](#в-образе-чего-то-не-хватает)
   * [Как запустить собранное?](#как-запустить-собранное)
   * [Как запустить консоль?](#как-запустить-консоль)
   * [Где взять Netcat под Windows?](#где-взять-netcat-под-windows)
@@ -181,10 +185,11 @@ int main()
 - Вы могли собрать код, не устанавливая лишних библиотек.
 - Вы могли проверить сборку тем же самым компилятором, что и проверяющий.
 
-Напомню, что образ с инструкциями [лежит на docker.hub](https://hub.docker.com/r/artiomn/gb-build-image).
+Напомню, что образ с инструкциями [лежит на Docker.hub](https://hub.docker.com/r/artiomn/gb-build-image).
+У GeekBrains есть [поясняющее видео](https://gb.ru/events/3942) про C++ в Docker.
 
 
-#### Как использовать docker?
+#### Как использовать Docker?
 
 На Windows только [вместе с Linux подсистемой](https://docs.microsoft.com/en-us/windows/wsl/install).  
 На Linux его надо установить, а как, зависит от вашего дистрибутива.
@@ -194,6 +199,10 @@ int main()
 #### Могу ли я собирать в IDE?
 
 Это зависит от IDE. Возможно использовать удалённую сборку по SSH (сервер установлен в образе), некоторые IDE, такие как CLion, поддерживают работу с Docker напрямую.  
+
+
+##### CLion
+
 Пример настройки CLion показан [здесь](https://blog.jetbrains.com/clion/2021/10/clion-2021-3-eap-new-docker-toolchain/).
 
 Настройки конфигурации Docker показаны на скриншоте:
@@ -203,6 +212,71 @@ int main()
 Настройки конфигурации CMake:
 
 ![](img/todo/clion_docker_cmake.png)
+
+
+##### QtCreator
+
+Раньше QtCreator не поддерживал [удалённую сборку по SSH](https://stackoverflow.com/questions/42880004/with-qtcreator-how-can-i-build-my-project-on-a-remote-server-i-have-ssh-access).
+
+Есть вариант настройки [с подмонтированием каталога через SSHFS](https://forum.qt.io/topic/9928/qt-creator-remote-development-via-ssh-for-desktop-projects).
+Но все пути к инклудам, а также библиотекам, естественно, будут некорректны, т.к. в контейнере они другие.
+
+Возможно самый просто вариант - установить QtCreator в контейнер и запустить оттуда.
+На данный момент для этого собран образ.
+Чтобы запустить его, используйте:
+
+```
+./run -q
+```
+
+
+#### Не могу подключиться к Docker либо IDE его не видит, что делать?
+
+Проверьте:
+
+- Установлен ли у вас Docker. Если нет - [установите](https://docs.docker.com/engine/install/).
+- Достаточно ли прав у вашего пользователя, что с Docker взаимодействовать.
+
+В большинстве дистрибутивов, при установке Docker создаёт группу `docker`, что вы можете проверить, выполнив следующую команду:
+
+```
+$ grep docker /etc/group
+docker:x:997:
+```
+
+Видно, что пользователя в этой группе нет.
+Добавьте его туда:
+
+```
+$ sudo usermod -a -G docker "$USER"
+```
+
+```
+$ grep docker /etc/group
+docker:x:997:artiom
+```
+
+После того, как вы перелогинитесь в системе, группа будет видна:
+
+```
+$ groups
+sys network power video storage lp input audio wheel artiom docker
+```
+
+
+#### В образе чего-то не хватает
+
+Возможно, образ устарел.
+Обновите его:
+
+```
+$ docker pull artiomn/gb-build-image
+Using default tag: latest
+latest: Pulling from artiomn/gb-build-image
+Digest: sha256:be8e76c39543bd03f503a294d96dc578c5ad90b77c1473e6b03ef1feb88c0b0c
+Status: Downloaded newer image for artiomn/gb-build-image:latest
+docker.io/artiomn/gb-build-image:latest
+```
 
 
 ### Как запустить собранное?
