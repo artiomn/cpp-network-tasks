@@ -229,6 +229,8 @@ int main()
 ./run -q
 ```
 
+![QtCreator, запущенный в Docker](img/todo/qt_creator_docker.png)
+
 
 #### Не могу подключиться к Docker либо IDE его не видит, что делать?
 
