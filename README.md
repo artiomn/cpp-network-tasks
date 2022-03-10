@@ -137,14 +137,14 @@ int main()
 }
 ```
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Я художник, я так вижу, мне плевать на правила оформления
 
 Ваша работа сразу автоматически отправляется в помойку.
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Почему используется Linux?
@@ -155,7 +155,7 @@ int main()
 - Перевод кода на Windows оговорён.
 - По возможности, код и так кроссплатформенный.
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Могу ли я собрать код на Windows?
@@ -171,7 +171,7 @@ int main()
 
 Также, есть некоторый код, специфичный для Windows, но в уроках он, как правило, не упоминается.
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Где все примеры?
@@ -179,7 +179,7 @@ int main()
 Те, что сделаны, - в надёжном месте. Они будут добавляться по мере прохождения уроков.
 Доступные вам примеры находятся в каталоге `src/l<номер_урока>`.
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Как собрать примеры?
@@ -198,7 +198,7 @@ int main()
 Под Windows сборка была проверена на MSVS 2019 и собранные артефакты будут находиться в `src\out\build\windows-default\bin`.
 Собираться под Windows будет не всё, есть примеры только под Linux.
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Docker - что это?
@@ -215,7 +215,7 @@ int main()
 Напомню, что образ с инструкциями [лежит на Docker.hub](https://hub.docker.com/r/artiomn/gb-build-image).
 У GeekBrains есть [поясняющее видео](https://gb.ru/events/3942) про C++ в Docker.
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 #### Как использовать Docker?
@@ -224,14 +224,14 @@ int main()
 На Linux его надо установить, а как, зависит от вашего дистрибутива.
 Например, в deb-based это делается [по следующей инструкции](https://docs.docker.com/engine/install/debian/).
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 #### Могу ли я собирать в IDE?
 
 Это зависит от IDE. Возможно использовать удалённую сборку по SSH (сервер установлен в образе), некоторые IDE, такие как CLion, поддерживают работу с Docker напрямую.  
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ##### CLion
@@ -246,7 +246,7 @@ int main()
 
 ![](img/todo/clion_docker_cmake.png)
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ##### QtCreator
@@ -266,7 +266,7 @@ int main()
 
 ![QtCreator, запущенный в Docker](img/todo/qt_creator_docker.png)
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 #### Не могу подключиться к Docker либо IDE его не видит, что делать?
@@ -302,7 +302,7 @@ $ groups
 sys network power video storage lp input audio wheel artiom docker
 ```
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 #### В образе чего-то не хватает
@@ -319,7 +319,7 @@ Status: Downloaded newer image for artiomn/gb-build-image:latest
 docker.io/artiomn/gb-build-image:latest
 ```
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Как запустить собранное?
@@ -338,7 +338,7 @@ Sending packet 0 to "google.com" request with id = 29
 Receiving packet 0 from "google.com" response with id = 29, time = 15.5ms
 ```
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Как запустить консоль?
@@ -346,7 +346,7 @@ Receiving packet 0 from "google.com" response with id = 29, time = 15.5ms
 - `./run`
 - `docker-compose run --rm gb` - для тех, кто пользуется docker-compose.
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Где взять Netcat под Windows?
@@ -357,7 +357,7 @@ Receiving packet 0 from "google.com" response with id = 29, time = 15.5ms
 Windows Defender может заблокировать Netcat, определив его, как Netcat.Hacktool.
 В таком случае, просто отключите "защиту реального времени".
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Всё делаю правильно, но что-то не подключается
@@ -366,7 +366,7 @@ Windows Defender может заблокировать Netcat, определи�
 Как исправить? Зависит от приложения. Задайте ему не доменное имя, а IPv4 адрес явно, при возможности.
 Для Netcat возможно использовать опцию `-4` (не все реализации её поддерживают).
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### А у меня вопрос!
@@ -374,4 +374,4 @@ Windows Defender может заблокировать Netcat, определи�
 Замечательно. Но прежде, чем задавать его преподавателю, вы пробовали найти ответ? Возможно, что его [надо лишь поискать](https://www.google.com)?
 У преподавателя не так много времени для того, чтобы делать это за вас. Если ответа нет - задавайте.
 
-[К оглавлению.](https://github.com/artiomn/cpp-network-tasks/edit/master/README.md#repository-with-a-code-for-the--students)
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
