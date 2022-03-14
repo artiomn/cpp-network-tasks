@@ -43,8 +43,8 @@ const wchar_t separ = fs::path::preferred_separator;
 const wchar_t separ = *reinterpret_cast<const wchar_t*>(&fs::path::preferred_separator);
 #endif
 
-
-std::optional<addrinfo> get_serv_info(const char *port)
+std::unique_ptr<addrinfo, decltype(&freeaddrinfo)>
+get_serv_info(const char *port)
 {
     struct addrinfo hints =
     {
@@ -59,12 +59,10 @@ std::optional<addrinfo> get_serv_info(const char *port)
     if ((ai_status = getaddrinfo(nullptr, port, &hints, &s_i)) != 0)
     {
         std::cerr << "getaddrinfo error " << gai_strerror(ai_status) << std::endl;
-        return std::nullopt;
+        return std::unique_ptr<addrinfo, decltype(&freeaddrinfo)>(nullptr, freeaddrinfo);
     }
 
-    std::unique_ptr<addrinfo, decltype(&freeaddrinfo)> servinfo{s_i, freeaddrinfo};
-
-    return *s_i;
+    return std::unique_ptr<addrinfo, decltype(&freeaddrinfo)>(s_i, freeaddrinfo);
 }
 
 
@@ -298,8 +296,9 @@ int main(int argc, const char * const argv[])
     try
     {
         auto servinfo = get_serv_info(argv[1]);
-        if (std::nullopt == servinfo)
+        if (!servinfo)
         {
+            std::cerr << "Can't get servinfo!" << std::endl;
             exit(EXIT_FAILURE);
         }
 
