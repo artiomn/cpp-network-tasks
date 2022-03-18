@@ -8,8 +8,6 @@
 #include <socket_wrapper/socket_class.h>
 
 
-const size_t buffer_size = 256;
-
 void bind_sockets(const socket_wrapper::SocketWrapper &sock_wrap,
                   const std::string &address1,
                   const std::string &address2,

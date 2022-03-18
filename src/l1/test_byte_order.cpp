@@ -5,8 +5,8 @@
 #include <iostream>
 #include <cstdint>
 
-int main ()
+int main()
 {
-  uint16_t x = 0x0001;
-  std::cout << (*((uint8_t*) &x) ? "little" : "big") << "-endian" << std::endl;
+    uint16_t x = 0x0001;
+    std::cout << (*((uint8_t*) &x) ? "little" : "big") << "-endian" << std::endl;
 }

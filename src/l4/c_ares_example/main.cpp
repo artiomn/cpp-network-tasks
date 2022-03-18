@@ -11,6 +11,8 @@ extern "C"
 
 void dns_callback (void* arg, int status, int timeouts, struct hostent* host)
 {
+    (void)arg;
+
     if (ARES_SUCCESS == status)
         std::cout << host->h_name << std::endl;
     else
@@ -34,6 +36,9 @@ void main_loop(ares_channel &channel)
 
         tvp = ares_timeout(channel, nullptr, &tv);
         count = select(nfds, &readers, &writers, nullptr, tvp);
+
+        if (count < 0) break;
+
         ares_process(channel, &readers, &writers);
      }
 

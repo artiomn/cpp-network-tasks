@@ -1,6 +1,22 @@
 #!/bin/sh
 
-CMD=${*:-bash}
+IMAGE_NAME=artiomn/gb-build-image
 
-docker run -it --rm --network host -v "$PWD:/usr/src/gb" -e "EXT_UID=$(id -u)" -e "EXT_GID=$(id -g)" -w /usr/src/gb artiomn/gb-build-image ${CMD}
+if [ "$1" == "--" ]; then
+    shift
+elif [ "$1" == "-q" ]; then
+    IMAGE_NAME=artiomn/gb-qt-creator-image
+    shift
+    CMD="/usr/bin/qtcreator ${*}"
+fi
+
+if [ "$1" == "--" ]; then
+    shift
+fi
+
+if [ -z "${CMD}" ]; then
+    CMD=${*:-bash}
+fi
+
+docker run -it --rm --network host --cap-add sys_ptrace -v "$PWD:/usr/src/gb" -e "EXT_UID=$(id -u)" -e "EXT_GID=$(id -g)" -w /usr/src/gb "${IMAGE_NAME}" ${CMD}
 

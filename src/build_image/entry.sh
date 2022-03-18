@@ -6,7 +6,6 @@ USER_NAME="${USER_NAME:-developer}"
 export DISPLAY=":0"
 
 if [ "${EXT_UID}" -ne 0 ]; then
-
     groupadd -g "${EXT_GID}" "${USER_NAME}" && \
         useradd -m -u "${EXT_UID}" -g "${EXT_GID}" -Gsudo,root "${USER_NAME}" && \
         chown "${USER_NAME}:${USER_NAME}" "${SOURCE_PATH}" && \

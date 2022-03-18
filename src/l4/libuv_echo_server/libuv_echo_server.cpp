@@ -14,6 +14,8 @@ struct sockaddr_in addr;
 
 void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf)
 {
+    (void)handle;
+
     buf->base = (char*)malloc(suggested_size);
     buf->len = suggested_size;
 }
@@ -77,12 +79,14 @@ void on_new_connection(uv_stream_t *server, int status)
 
 int main()
 {
+	unsigned short port = 8192;
+
     loop = uv_default_loop();
 
     uv_tcp_t server;
     uv_tcp_init(loop, &server);
 
-    uv_ip4_addr("0.0.0.0", 7000, &addr);
+    uv_ip4_addr("0.0.0.0", port, &addr);
 
     uv_tcp_bind(&server, reinterpret_cast<const struct sockaddr*>(&addr), 0);
     int r = uv_listen((uv_stream_t*)&server, 128, on_new_connection);
@@ -91,6 +95,9 @@ int main()
         std::cerr << "Listen error " << uv_strerror(r) << std::endl;
         return EXIT_FAILURE;
     }
+
+    std::cout << "Listening started on the port " << port << std::endl;
+
     return uv_run(loop, UV_RUN_DEFAULT);
 }
 

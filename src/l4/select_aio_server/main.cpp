@@ -51,7 +51,8 @@ const wchar_t separ = *reinterpret_cast<const wchar_t*>(&fs::path::preferred_sep
 #endif
 
 
-std::optional<addrinfo> get_serv_info(const char *port)
+std::unique_ptr<addrinfo, decltype(&freeaddrinfo)>
+get_serv_info(const char *port)
 {
     struct addrinfo hints =
     {
@@ -66,12 +67,10 @@ std::optional<addrinfo> get_serv_info(const char *port)
     if ((ai_status = getaddrinfo(nullptr, port, &hints, &s_i)) != 0)
     {
         std::cerr << "getaddrinfo error " << gai_strerror(ai_status) << std::endl;
-        return std::nullopt;
+        return std::unique_ptr<addrinfo, decltype(&freeaddrinfo)>(nullptr, freeaddrinfo);
     }
 
-    std::unique_ptr<addrinfo, decltype(&freeaddrinfo)> servinfo{s_i, freeaddrinfo};
-
-    return *s_i;
+    return std::unique_ptr<addrinfo, decltype(&freeaddrinfo)>(s_i, freeaddrinfo);
 }
 
 
@@ -134,8 +133,8 @@ public:
 
 
 public:
-    Transceiver(socket_wrapper::Socket &&client_sock) : client_sock_(std::move(client_sock)), buffer_(buffer_size) {}
-    Transceiver(Transceiver&& t) : client_sock_(std::move(t.client_sock_)), buffer_(buffer_size) {}
+    Transceiver(socket_wrapper::Socket &&client_sock) : buffer_(buffer_size), client_sock_(std::move(client_sock)) {}
+    Transceiver(Transceiver&& t) : buffer_(buffer_size), client_sock_(std::move(t.client_sock_)) {}
     Transceiver(const Transceiver&) = delete;
     Transceiver() = delete;
     ~Transceiver()
@@ -145,15 +144,13 @@ public:
 
 public:
     const socket_wrapper::Socket &ts_socket() const { return client_sock_; }
-    const int file_descriptor() const { return file_descriptor_; }
+    int file_descriptor() const { return file_descriptor_; }
 
 public:
     IOStatus send_buffer()
     {
         assert(true == static_cast<bool>(client_sock_));
         if (buffer_index_ <= 0) return IOStatus::no_data;
-
-        const auto size = buffer_.size();
 
         while (true)
         {
@@ -405,7 +402,7 @@ private:
 
     void process_new_client()
     {
-        auto client_sock = std::move(accept_client(server_socket_));
+        auto client_sock = accept_client(server_socket_);
 
         if (!client_sock)
         {
@@ -455,11 +452,11 @@ public:
 
         std::cout << "\n" << active_descriptors << " descriptors active..." << std::endl;
         // Accept new connection, if it's possible.
-        if (FD_ISSET(server_socket_, &read_descriptors_set_)) process_new_client();
+        if (FD_ISSET(static_cast<SocketDescriptorType>(server_socket_), &read_descriptors_set_)) process_new_client();
 
         for (auto client_iter = clients_.begin(); client_iter != clients_.end();)
         {
-            if (FD_ISSET(*client_iter, &err_descriptors_set_))
+            if (FD_ISSET(static_cast<SocketDescriptorType>(*client_iter), &err_descriptors_set_))
             {
                 // Client socket error.
                 // remove_descriptor(*client_iter);
@@ -476,7 +473,7 @@ public:
                 continue;
             }
 
-            if (FD_ISSET(*client_iter, &read_descriptors_set_))
+            if (FD_ISSET(static_cast<SocketDescriptorType>(*client_iter), &read_descriptors_set_))
             {
                 std::cout << "Socket ready for reading: " << *client_iter << std::endl;
                 client_iter->update_file_path();
@@ -491,7 +488,7 @@ public:
                     continue;
                 }*/
 
-                if (FD_ISSET(client, &write_descriptors_set_))
+                if (FD_ISSET(static_cast<SocketDescriptorType>(client), &write_descriptors_set_))
                 {
                     std::cout << "Socket ready for writing: " << client << std::endl;
                     if (Transceiver::IOStatus::error == client.send_data()) throw std::logic_error("send data to socket");
@@ -560,9 +557,10 @@ int main(int argc, const char * const argv[])
 
     try
     {
-        auto servinfo = std::move(get_serv_info(argv[1]));
-        if (std::nullopt == servinfo)
+        auto servinfo = get_serv_info(argv[1]);
+        if (!servinfo)
         {
+            std::cerr << "Can't get servinfo!" << std::endl;
             return EXIT_FAILURE;
         }
 

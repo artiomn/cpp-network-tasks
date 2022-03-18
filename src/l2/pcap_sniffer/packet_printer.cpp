@@ -177,6 +177,9 @@ void PacketPrinter::print_payload(const u_char *payload, int len)
 // Dissect/print packet
 void PacketPrinter::got_packet(u_char *args, const pcap_pkthdr *header, const u_char *packet)
 {
+    (void)args;
+    (void)header;
+
     const sniff_ethernet *ethernet = reinterpret_cast<const sniff_ethernet*>(packet);
     const sniff_ip *ip = reinterpret_cast<const sniff_ip*>(packet + SIZE_ETHERNET);
     const sniff_tcp *tcp;

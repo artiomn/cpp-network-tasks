@@ -1,4 +1,6 @@
-#define _GNU_SOURCE
+#if !defined(_GNU_SOURCE)
+#   define _GNU_SOURCE
+#endif
 
 //
 // System calls interceptor for the networking spoiling...

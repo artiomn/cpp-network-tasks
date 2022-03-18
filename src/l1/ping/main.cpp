@@ -220,13 +220,12 @@ public:
 public:
     PingPacket create_request()
     {
-        return std::move(PingPacket(pid_, sequence_number_++));
+        return PingPacket(pid_, sequence_number_++);
     }
 
     PingPacket create_response()
     {
         return PingPacket();
-        return std::move(PingPacket());
     }
 
 private:
@@ -237,7 +236,7 @@ private:
 
 void send_ping(const socket_wrapper::Socket &sock, const std::string &hostname, const struct sockaddr_in &host_address)
 {
-    int ttl_val = 255, msg_count = 0, flag = 1, msg_received_count = 0;
+    int ttl_val = 255;
     using namespace std::chrono;
 
 #if !defined(WIN32)
