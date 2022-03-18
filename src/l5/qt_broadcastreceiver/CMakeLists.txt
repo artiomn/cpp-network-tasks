@@ -22,4 +22,3 @@ target_link_libraries("${PROJECT_NAME}" PRIVATE Qt5::Core Qt5::Network Qt5::Widg
 if(WIN32)
   target_link_libraries("${PROJECT_NAME}" PRIVATE wsock32 ws2_32)
 endif()
-
