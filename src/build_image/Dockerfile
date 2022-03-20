@@ -6,8 +6,8 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
   && apt-get -y --no-install-recommends --show-progress install \
+    capnproto \
     clang \
-    mingw-w64 \
     cmake \
     gdb \
     gdbserver \
@@ -16,15 +16,20 @@ RUN apt-get update \
     qtbase5-dev \
     libgtest-dev \
     libglib2.0-dev \
+    libgtk2.0-dev \
     libgtk-3-dev \
     libpcap-dev \
     libevent-2\* libevent-dev libev-dev libuv1-dev \
     libc-ares-dev \
+    libpoco-dev \
+    libtorrent-dev \
+    inetutils-ping \
     iproute2 \
     less \
     meson \
     netcat \
     net-tools \
+    protobuf-compiler \
     python \
     rapidjson-dev \
     rsync \
@@ -34,17 +39,17 @@ RUN apt-get update \
     telnet \
     tcpdump \
     vim \
-  && git clone --depth 1 https://github.com/pistacheio/pistache.git \
+  && git clone --recursive --depth 1 https://github.com/artiomn/pistache \
   && cd pistache \
-  && meson setup build \
-    --buildtype=release \
+  && cmake \
     -DPISTACHE_USE_SSL=true \
     -DPISTACHE_BUILD_EXAMPLES=true \
-    -DPISTACHE_BUILD_TESTS=true \
+    -DPISTACHE_BUILD_TESTS=false \
     -DPISTACHE_BUILD_DOCS=false \
-    --prefix="/usr/local" \
-  && meson compile -C build \
-  && meson install -C build \
+    -DCMAKE_INSTALL_PREFIX=/usr/local \
+    . \
+  && cmake --build . --parallel \
+  && cmake --install . --prefix "/usr/local" \
   && cd / \
   && rm -rf pistache \
   && git clone --recursive --depth 1 https://github.com/corvusoft/restbed.git \
@@ -60,6 +65,15 @@ RUN apt-get update \
   && cmake --build build --parallel \
   && cmake --install build --prefix "/usr/local" \
   && rm -rf jwt-cpp \
+  && cd / \
+  && git clone --recursive --depth 1 https://github.com/reo7sp/tgbot-cpp \
+  && cd tgbot-cpp \
+  && cmake . \
+  && cmake --build . --parallel \
+  && cmake --install . --prefix "/usr/local" \
+  && cd / \
+  && rm -rf tgbot-cpp \
+  && ldconfig \
   && apt-get clean
 
 COPY ./entry.sh /
