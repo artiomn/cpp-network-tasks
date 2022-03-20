@@ -167,6 +167,8 @@ artiomn/gb-build-image
 artiomn/gb-qt-creator-image
 ```
 
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
+
 
 ### Где все примеры?
 
@@ -229,7 +231,9 @@ artiomn/gb-qt-creator-image
 - [Вебинар GB](https://gbcdn.mrgcdn.ru/uploads/record/133973/attachment/dc6035ef4087e028dafb86507e6d1ebd.mp4), который вы должны были смотреть к началу курса.
 - [Документация](https://cmake.org/documentation/).
 - [Статьи](https://habr.com/ru/post/431428/).
-- Много информаии в Интернете.
+- Много информации в Интернете.
+
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
 
 ### Docker - что это?
