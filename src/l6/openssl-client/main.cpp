@@ -8,6 +8,9 @@ extern "C"
 #include <openssl/ssl.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
+
+// Need only for the certificate issuer name printing.
+#include <openssl/x509.h>
 }
 
 
@@ -58,12 +61,31 @@ bool secure_connect(const std::string &hostname)
 
     SSL* ssl = nullptr;
 
-    // Link BIO channel, SSL session, and server endpoint.
-    BIO_get_ssl(bio, &ssl); /* session */
-    SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY); /* robustness */
-    std::cout << "Connecting to \"" << host << "\"..." << std::endl;
+    // Get session.
+    BIO_get_ssl(bio, &ssl);
+
+    SSL_set_mode(ssl, SSL_MODE_AUTO_RETRY);
+    std::cout
+        << "Connecting to \""
+        << host << "\"..."
+        << std::endl;
+
+    if (SSL_set_tlsext_host_name(ssl, host.c_str()) != 1)
+    {
+        cleanup(ctx, bio);
+        return print_error("SSL_set_tlsext_host_name");
+    }
+
+    // Without this `SSL_get_verify_result()` will always return error 18 (self-signed cert).
     BIO_set_conn_hostname(bio, host.c_str());
+    // Link BIO channel, SSL session, and server endpoint.
     BIO_set_conn_port(bio, "443");
+
+    // Loading verification chains: must be done before connection to the peer.
+    if (!SSL_CTX_load_verify_locations(ctx, "/etc/ssl/certs/ca-certificates.crt", "/etc/ssl/certs/"))
+    {
+        return print_error("SSL_CTX_load_verify_locations...");
+    }
 
     // Trying to connect.
     if (BIO_do_connect(bio) <= 0)
@@ -72,13 +94,64 @@ bool secure_connect(const std::string &hostname)
         print_error("BIO_do_connect...");
     }
 
-    // Verifying truststore, check cert.
-    if (!SSL_CTX_load_verify_locations(ctx, "/etc/ssl/certs/ca-certificates.crt", "/etc/ssl/certs/"))
-        return print_error("SSL_CTX_load_verify_locations...");
+    // This is not necessary, showing peer certs.
+    X509 *cert = SSL_get_peer_certificate(ssl);
+    if (nullptr == cert)
+    {
+        std::cerr
+            << "No peer certificates."
+            << std::endl;
+    }
+    else
+    {
+        std::string buf;
+        buf.resize(256);
+        // Peer cert data reading example.
+        std::cout
+            << "Peer certificate:\n"
+            << "Subject: " << X509_NAME_oneline(X509_get_subject_name(cert), buf.data(), buf.size()) << "\n"
+            << "Issuer: " << X509_NAME_oneline(X509_get_issuer_name(cert), buf.data(), buf.size()) << "\n"
+            << std::endl;
+        X509_free(cert);
+
+        // Chain example.
+        STACK_OF(X509) *certs = SSL_get_peer_cert_chain(ssl);
+        for (int i = 1; i < sk_X509_num(certs); i++)
+        {
+            auto ct = sk_X509_value(certs, i);
+            std::cout
+                << "Cert " << i << " in chain:\n"
+                << "Subject: " << X509_NAME_oneline(X509_get_subject_name(ct), buf.data(), buf.size()) << "\n"
+                << "Issuer: " << X509_NAME_oneline(X509_get_issuer_name(ct), buf.data(), buf.size()) << "\n"
+                << "---"
+                << std::endl;
+        }
+    }
 
     long verify_flag = SSL_get_verify_result(ssl);
-    if (verify_flag != X509_V_OK)
-      std::cerr << "##### Certificate verification error (" << verify_flag << ") but continuing..." << std::endl;
+    switch (verify_flag)
+    {
+        // Verification error handling by code example.
+        case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
+        case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+            std::cerr
+                << "##### Certificate verification error: self-signed ("
+                << X509_verify_cert_error_string(verify_flag) << ", "
+                << verify_flag << ") but continuing..."
+                << std::endl;
+        break;
+        case X509_V_OK:
+            std::cout
+                << "##### Certificate verification passed..."
+                << std::endl;
+        break;
+        default:
+            std::cerr
+                << "##### Certificate verification error ("
+                << X509_verify_cert_error_string(verify_flag) << ", "
+                << verify_flag << ") but continuing..."
+                << std::endl;
+    }
 
     // Fetch the homepage as sample data.
     request

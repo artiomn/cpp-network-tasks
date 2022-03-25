@@ -30,10 +30,18 @@ bool recv_packet(SSL *ssl)
 
     if (len < 0)
     {
-        int err = SSL_get_error(ssl, len);
-        if (err == SSL_ERROR_WANT_READ) return true;
-        if (err == SSL_ERROR_WANT_WRITE) return true;
-        if (err == SSL_ERROR_ZERO_RETURN || err == SSL_ERROR_SYSCALL || err == SSL_ERROR_SSL) return false;
+        switch (SSL_get_error(ssl, len))
+        {
+            // Not an error.
+            case SSL_ERROR_WANT_READ:
+            case SSL_ERROR_WANT_WRITE:
+                return true;
+            break;
+            case SSL_ERROR_ZERO_RETURN:
+            case SSL_ERROR_SYSCALL:
+            case SSL_ERROR_SSL:
+                return false;
+        }
     }
 
     return true;
@@ -49,9 +57,9 @@ bool send_packet(const std::string &buf, SSL *ssl)
         switch (err)
         {
             case SSL_ERROR_WANT_WRITE:
-            return true;
             case SSL_ERROR_WANT_READ:
-            return true;
+                return true;
+            break;
             case SSL_ERROR_ZERO_RETURN:
             case SSL_ERROR_SYSCALL:
             case SSL_ERROR_SSL:
@@ -129,8 +137,8 @@ int main(int argc, const char * const argv[])
     SSL_load_error_strings();
 
     const SSL_METHOD *meth = TLS_client_method();
-    SSL_CTX *ctx = SSL_CTX_new (meth);
-    ssl = SSL_new (ctx);
+    SSL_CTX *ctx = SSL_CTX_new(meth);
+    ssl = SSL_new(ctx);
 
     if (!ssl)
     {
@@ -149,7 +157,7 @@ int main(int argc, const char * const argv[])
         log_ssl();
         return EXIT_FAILURE;
     }
-    std::cout << "SSL connection using " << SSL_get_cipher (ssl) << std::endl;
+    std::cout << "SSL connection using " << SSL_get_cipher(ssl) << std::endl;
 
     std::string request = {"GET / HTTP/1.1\r\n\r\n"};
     send_packet(request, ssl);
