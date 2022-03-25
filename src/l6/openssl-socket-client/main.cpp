@@ -147,7 +147,6 @@ int main(int argc, const char * const argv[])
         return EXIT_FAILURE;
     }
 
-    int ssl_sock = SSL_get_fd(ssl);
     SSL_set_fd(ssl, sock);
 
     int err = SSL_connect(ssl);
@@ -162,6 +161,8 @@ int main(int argc, const char * const argv[])
     std::string request = {"GET / HTTP/1.1\r\n\r\n"};
     send_packet(request, ssl);
     recv_packet(ssl);
+
+    SSL_shutdown(ssl);
 
     return EXIT_SUCCESS;
 }
