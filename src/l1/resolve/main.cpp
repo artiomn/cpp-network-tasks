@@ -63,7 +63,7 @@ int print_ips_with_getaddrinfo(const std::string &host_name)
             char ip6[INET6_ADDRSTRLEN];
 
             std::cout << "AF_INET6\n";
-            sockaddr_in6 const * const sin = reinterpret_cast<const sockaddr_in6* const>(s->ai_addr);
+            const sockaddr_in6* const sin = reinterpret_cast<const sockaddr_in6* const>(s->ai_addr);
             std::cout << "Address length: " << sizeof(sin->sin6_addr) << "\n";
             std::cout << "IP Address: " << inet_ntop(AF_INET6, &(sin->sin6_addr), ip6, INET6_ADDRSTRLEN) << "\n";
         }
