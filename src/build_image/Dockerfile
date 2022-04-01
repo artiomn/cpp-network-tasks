@@ -59,6 +59,34 @@ RUN apt-get update \
   && cmake --install build --prefix "/usr/local" \
   && cd / \
   && rm -rf restbed \
+  && git clone --recursive --depth 1 https://github.com/oatpp/oatpp.git \
+  && cd oatpp \
+  && cmake -B build -DCMAKE_INSTALL_PREFIX=/usr/local . \
+  && cmake --build build --parallel \
+  && cmake --install build --prefix "/usr/local" \
+  && cd / \
+  && rm -rf oatpp \
+  && git clone --recursive --depth 1 https://github.com/oatpp/oatpp-websocket.git \
+  && cd oatpp-websocket \
+  && cmake -B build -DCMAKE_INSTALL_PREFIX=/usr/local . \
+  && cmake --build build --parallel \
+  && cmake --install build --prefix "/usr/local" \
+  && cd / \
+  && rm -rf oatpp-websocket \
+  && git clone --recursive --depth 1 https://github.com/oatpp/oatpp-swagger.git \
+  && cd oatpp-swagger \
+  && cmake -B build -DCMAKE_INSTALL_PREFIX=/usr/local . \
+  && cmake --build build --parallel \
+  && cmake --install build --prefix "/usr/local" \
+  && cd / \
+  && rm -rf oatpp-swagger \
+  && git clone --recursive --depth 1 https://github.com/oatpp/oatpp-curl.git \
+  && cd oatpp-curl \
+  && cmake -B build -DCMAKE_INSTALL_PREFIX=/usr/local . \
+  && cmake --build build --parallel \
+  && cmake --install build --prefix "/usr/local" \
+  && cd / \
+  && rm -rf oatpp-curl \
   && git clone --recursive --depth 1 https://github.com/Thalhammer/jwt-cpp \
   && cd jwt-cpp \
   && cmake -B build -DBUILD_SSL=YES -DBUILD_TESTS=NO -DCMAKE_INSTALL_PREFIX=/usr/local . \
