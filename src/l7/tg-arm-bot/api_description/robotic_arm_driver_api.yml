@@ -1,0 +1,275 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/artiomn/robotic_arm_driver/1.0.0
+info:
+  version: "1.0.0"
+  title: robotic-arm-server-api
+  description: The API for the Robotic Arm Server educational project
+paths:
+  '/device':
+    get:
+      tags:
+        - Device
+      description: returns device info
+      operationId: get_device_info
+      responses:
+        '200':
+          description: Device info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceRegistrationInfo'
+
+  '/device/state':
+    get:
+      tags:
+        - Device
+      description: returns device state
+      operationId: get_device_state
+      responses:
+        '200':
+          description: Device state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceState'
+    put:
+      tags:
+        - Device
+      operationId: change_device_state
+      responses:
+        '200':
+          description: device state was changed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceState'
+  '/device/shoulder':
+    get:
+      tags:
+        - Shoulder
+      description: returns shoulder parameters
+      operationId: get_shoulder_parameters
+      responses:
+        '200':
+          description: shoulder parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Angles'
+
+  '/device/shoulder/rotate_angle':
+    get:
+      tags:
+        - Shoulder
+      description: returns shoulder rotation angle
+      operationId: get_shoulder_rotate_angle
+      responses:
+        '200':
+          description: Device info
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 10
+    put:
+      tags:
+        - Shoulder
+      operationId: set_shoulder_rotate_angle
+      responses:
+        '200':
+          description: shoulder rotation angle was set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              example: 10
+
+  '/device/shoulder/lift_angle':
+    get:
+      tags:
+        - Shoulder
+      description: returns shoulder lift angle
+      operationId: get_shoulder_lift_angle
+      responses:
+        '200':
+          description: shoulder lift angle
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 10
+    put:
+      tags:
+        - Shoulder
+      operationId: set_shoulder_lift_angle
+      responses:
+        '200':
+          description: shoulder lift angle was set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              example: 10
+
+  '/device/forearm':
+    get:
+      tags:
+        - Forearm
+      description: returns forearm parameters
+      operationId: get_forearm_parameters
+      responses:
+        '200':
+          description: forearm parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Angles'
+
+  '/device/forearm/rotate_angle':
+    get:
+      tags:
+        - Forearm
+      description: returns forearm rotation angle
+      operationId: get_forearm_rotate_angle
+      responses:
+        '200':
+          description: forearm rotation angle
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 10
+    put:
+      tags:
+        - Forearm
+      operationId: set_forearm_rotate_angle
+      responses:
+        '200':
+          description: forearm rotation angle was set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              example: 10
+
+  '/device/forearm/lift_angle':
+    get:
+      tags:
+        - Forearm
+      description: returns forearm lift angle
+      operationId: get_forearm_lift_angle
+      responses:
+        '200':
+          description: Device info
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 10
+    put:
+      tags:
+        - Forearm
+      operationId: set_forearm_lift_angle
+      responses:
+        '200':
+          description: forearm lift angle was set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              example: 10
+
+  '/device/manipulator/lift_angle':
+    get:
+      tags:
+        - Manipulator
+      description: returns manipulator lift angle
+      operationId: get_manipulator_lift_angle
+      responses:
+        '200':
+          description: manipulator lift angle
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 10
+    put:
+      tags:
+        - Manipulator
+      operationId: set_manipulator_lift_angle
+      responses:
+        '200':
+          description: manipulator lift angle was set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              example: 10
+
+  '/device/manipulator/open_angle':
+    get:
+      tags:
+        - Manipulator
+      description: returns manipulator open angle
+      operationId: get_manipulator_open_angle
+      responses:
+        '200':
+          description: manipulator opening angle
+          content:
+            application/json:
+              schema:
+                type: integer
+                example: 10
+    put:
+      tags:
+        - Manipulator
+      operationId: set_manipulator_open_angle
+      responses:
+        '200':
+          description: manipulator opening angle was set
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: integer
+              example: 10
+
+
+components:
+  schemas:
+    DeviceRegistrationInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          format: name
+          example: 'New Robotic Arm'
+        id:
+          type: string
+          format: uuid
+          example: '0729a580-2240-11e6-9eb5-0002a5d5c51b'
+      required: ['id']
+
+    DeviceState:
+      type: string
+      enum:
+        - 'enabled'
+        - 'disabled'
+        - 'rebooting'
+
+    Angles:
+      type: object
+      properties:
+        rotate:
+          type: integer
+        lift:
+          type: integer

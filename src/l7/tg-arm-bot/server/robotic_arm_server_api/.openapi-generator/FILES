@@ -1,0 +1,16 @@
+.gitignore
+.openapi-generator-ignore
+README.md
+api/DeviceApi.cpp
+api/DeviceApi.h
+api/DeviceStateApi.cpp
+api/DeviceStateApi.h
+api/DevicesApi.cpp
+api/DevicesApi.h
+git_push.sh
+model/DeviceInfo.cpp
+model/DeviceInfo.h
+model/DeviceRegistrationInfo.cpp
+model/DeviceRegistrationInfo.h
+model/DeviceState.cpp
+model/DeviceState.h

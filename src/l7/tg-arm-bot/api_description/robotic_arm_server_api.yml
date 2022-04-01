@@ -1,0 +1,157 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/artiomn/robotic_arm_server/1.0.0
+info:
+  version: "1.0.0"
+  title: robotic-arm-server-api
+  description: The API for the Robotic Arm Server educational project
+paths:
+  /devices:
+    get:
+      tags:
+        - devices
+      description: returns all registered devices
+      operationId: get_devices
+      parameters:
+        - in: query
+          name: skip
+          description: number of records to skip
+          schema:
+            type: integer
+            format: int32
+        - in: query
+          name: limit
+          description: max number of records to return
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: All the devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+                  example: '0729a580-2240-11e6-9eb5-0002a5d5c51b'
+    post:
+      tags:
+        - devices
+      operationId: register_device
+      responses:
+        '200':
+          description: successfully registered device
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceRegistrationInfo'
+  '/device/{deviceId}':
+    get:
+      tags:
+        - device
+      description: returns registered device info
+      operationId: get_device_info
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Device info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceInfo'
+    delete:
+      tags:
+        - device
+      operationId: unregister_device
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successfully unregistered device
+  '/device/{deviceId}/state':
+    get:
+      tags:
+        - device_state
+      description: returns registered device state
+      operationId: get_device_state
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Device state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceState'
+    put:
+      tags:
+        - Device State
+      operationId: change_device_state
+      parameters:
+        - name: deviceId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: state was changed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceState'
+
+components:
+  schemas:
+    DeviceRegistrationInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          format: name
+          example: 'New Robotic Arm'
+        id:
+          type: string
+          format: uuid
+          example: 0729a580-2240-11e6-9eb5-0002a5d5c51b
+      required: ['id']
+
+    DeviceState:
+      type: string
+      enum:
+        - 'unknown'
+        - 'enabled'
+        - 'disabled'
+        - 'rebooting'
+
+    DeviceInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'My new device'
+        state:
+          $ref: '#/components/schemas/DeviceState'
