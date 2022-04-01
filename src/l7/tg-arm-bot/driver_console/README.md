@@ -1,6 +1,7 @@
-# websocket client
+# Console "virtual" arm driver
 
-Simple example of the websocket client. Built with oat++ (AKA oatpp) web framework.
+Just prints messages from the WebSocket to the console.
+Built with oat++ (AKA oatpp) web framework.
 
 See more:
 

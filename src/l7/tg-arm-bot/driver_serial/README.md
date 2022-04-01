@@ -1,6 +1,7 @@
-# websocket client
+# Serial port arm driver
 
-Simple example of the websocket client. Built with oat++ (AKA oatpp) web framework.
+Sends commands, received from the WebSocket to the serial port.
+Built with oat++ (AKA oatpp) web framework.
 
 See more:
 
