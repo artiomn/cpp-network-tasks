@@ -61,8 +61,6 @@ void WSListener::readMessage(const WebSocket& socket, v_uint8 opcode, p_char8 da
         // HTTP-like: <METHOD> <PATH> <HTTP/<ver>>.
         if (3 == req_line.size())
         {
-for (auto r : req_line) 
-            OATPP_LOGD(TAG, "Mww: %s", r.c_str());
             const auto& method = req_line[0];
             const auto& path = req_line[1];
             std::string parameter;

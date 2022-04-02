@@ -6,7 +6,7 @@ project(tg-arm-bot-server C CXX)
 set(Boost_USE_MULTITHREADED ON)
 
 find_package(Threads REQUIRED)
-find_library(RESTBED restbed REQUIRED PATHS "/usr/local/library" )
+find_library(RESTBED restbed REQUIRED PATHS "/usr/local/library")
 
 # Temporary hack.
 set(RESTBED /usr/local/library/librestbed.a)

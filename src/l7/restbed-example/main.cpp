@@ -15,7 +15,7 @@ void post_method_handler(const shared_ptr<Session> session)
     std::cout << "Handler was activated..." << std::endl;
     int content_length = request->get_header("Content-Length", 0);
 
-    session->fetch( content_length, [](const shared_ptr< Session > session, const Bytes& body)
+    session->fetch(content_length, [](const shared_ptr<Session> session, const Bytes& body)
     {
         std::cout
             << body.size() << "\n"
@@ -39,7 +39,7 @@ int main(int argc, const char* const argv[])
     resource->set_path(path);
     resource->set_method_handler(method, post_method_handler);
 
-    auto settings = make_shared< Settings >();
+    auto settings = make_shared<Settings>();
     settings->set_port(port);
     settings->set_default_header("Connection", "close");
 
