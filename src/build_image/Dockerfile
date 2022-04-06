@@ -12,8 +12,9 @@ RUN apt-get update \
     gdb \
     gdbserver \
     gosu \
+    inetutils-ping \
+    iproute2 \
     libboost-all-dev \
-    qtbase5-dev \
     libgtest-dev \
     libglib2.0-dev \
     libgtk2.0-dev \
@@ -23,14 +24,15 @@ RUN apt-get update \
     libc-ares-dev \
     libpoco-dev \
     libtorrent-dev \
-    inetutils-ping \
-    iproute2 \
+    libtorrent-rasterbar-dev \
     less \
     meson \
+    mpi-default-dev \
     netcat \
     net-tools \
     protobuf-compiler \
     python \
+    qtbase5-dev \
     rapidjson-dev \
     rsync \
     sudo \
@@ -48,8 +50,15 @@ RUN apt-get update \
     -DPISTACHE_BUILD_DOCS=false \
     -DCMAKE_INSTALL_PREFIX=/usr/local \
     . \
-  && cmake --build . --parallel \
-  && cmake --install . --prefix "/usr/local" \
+  && meson setup build \
+    --buildtype=debug \
+    -DPISTACHE_USE_SSL=true \
+    -DPISTACHE_BUILD_EXAMPLES=false \
+    -DPISTACHE_BUILD_TESTS=false \
+    -DPISTACHE_BUILD_DOCS=false \
+    --prefix="/usr/local" \
+  && meson compile -C build \
+  && meson install -C build \
   && cd / \
   && rm -rf pistache \
   && git clone --recursive --depth 1 https://github.com/corvusoft/restbed.git \
