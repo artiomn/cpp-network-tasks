@@ -18,5 +18,5 @@ if [ -z "${CMD}" ]; then
     CMD=${*:-bash}
 fi
 
-docker run -it --rm --network host --cap-add sys_ptrace -v "$PWD:/usr/src/gb" -e "EXT_UID=$(id -u)" -e "EXT_GID=$(id -g)" -w /usr/src/gb "${IMAGE_NAME}" ${CMD}
+docker run -it --rm --network host --cap-add sys_ptrace --privileged -v "$PWD:/usr/src/gb" -e "EXT_UID=$(id -u)" -e "EXT_GID=$(id -g)" -w /usr/src/gb "${IMAGE_NAME}" ${CMD}
 

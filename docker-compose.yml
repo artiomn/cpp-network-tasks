@@ -7,6 +7,8 @@ services:
     environment:
       - EXT_UID=1000
       - EXT_GID=1000
+    # Need for Yggdrasil run.
+    privileged: true
     working_dir: /usr/src/gb
     volumes:
       - .:/usr/src/gb
