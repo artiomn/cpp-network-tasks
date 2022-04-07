@@ -5,6 +5,10 @@ MAINTAINER artiomn
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update \
+  && gpg --fetch-keys https://neilalexander.s3.eu-west-2.amazonaws.com/deb/key.txt \
+  && gpg --export 569130E8CA20FBC4CB3FDE555898470A764B32C9 | apt-key add - \
+  && echo 'deb http://neilalexander.s3.eu-west-2.amazonaws.com/deb/ debian yggdrasil' >> /etc/apt/sources.list.d/yggdrasil.list \
+  && apt-get update \
   && apt-get -y --no-install-recommends --show-progress install \
     capnproto \
     clang \
@@ -41,6 +45,7 @@ RUN apt-get update \
     telnet \
     tcpdump \
     vim \
+    yggdrasil \
   && git clone --recursive --depth 1 https://github.com/artiomn/pistache \
   && cd pistache \
   && cmake \
@@ -116,6 +121,7 @@ RUN apt-get update \
 COPY ./entry.sh /
 RUN chmod +x /entry.sh
 COPY ./bashrc /etc/skel/.bashrc
+COPY ./yggdrasil.conf /etc/yggdrasil.conf
 
 ENTRYPOINT ["/entry.sh"]
 CMD ["/bin/bash"]
