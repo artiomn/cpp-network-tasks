@@ -9,8 +9,8 @@ namespace mpi = boost::mpi;
 
 int main()
 {
-  mpi::environment env;
-  mpi::communicator world;
+    mpi::environment env;
+    mpi::communicator world;
 
     if (0 == world.rank())
     {
