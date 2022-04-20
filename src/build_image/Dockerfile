@@ -44,6 +44,7 @@ RUN apt-get update \
     tar \
     telnet \
     tcpdump \
+    valgrind \
     vim \
     yggdrasil \
   && git clone --recursive --depth 1 https://github.com/artiomn/pistache \
