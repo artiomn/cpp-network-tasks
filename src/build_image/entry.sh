@@ -10,6 +10,7 @@ if [ "${EXT_UID}" -ne 0 ]; then
         useradd -m -u "${EXT_UID}" -g "${EXT_GID}" -Gsudo,root "${USER_NAME}" && \
         chown "${USER_NAME}:${USER_NAME}" "${SOURCE_PATH}" && \
         echo "${USER_NAME} ALL=(ALL) NOPASSWD: ALL" >> "/etc/sudoers.d/${USER_NAME}" && \
+        ln -s "${SOURCE_PATH}/src" "/home/${USER_NAME}" && \
         exec gosu "${USER_NAME}" "$@"
 fi
 
