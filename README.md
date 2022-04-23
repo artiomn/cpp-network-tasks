@@ -30,7 +30,8 @@
 
 Чтобы начать работать:
 
-- Если [Docker](https://www.docker.com/), не установлен в системе, [установите его](#как-использовать-docker).
+- Если [Docker](https://www.docker.com/) не установлен в системе, [установите его](#как-использовать-docker).
+- Если [Git](https://git-scm.com/) не установлен в системе, [установите его](https://git-scm.com/book/ru/v2/Введение-Установка-Git).
 - Склонируйте репозиторий: `git clone https://github.com/artiomn/cpp-network-tasks.git`
 - Зайдите в каталог `cpp-network-tasks`.
 - Запустите скрипт `./build_dockerized.sh`
