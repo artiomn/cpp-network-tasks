@@ -9,6 +9,7 @@
   * [Надо ли обновляться и как?](#надо-ли-обновляться-и-как)
   * [Где все примеры?](#где-все-примеры)
   * [Как собрать примеры?](#как-собрать-примеры)
+  * [Сборка не проходит, вообще не собирается ничего.](#сборка-не-проходит-вообще не-собирается-ничего)
   * [Почему используется Linux?](#почему-используется-linux)
   * [Могу ли я собрать код на Windows?](#могу-ли-я-собрать-код-на-windows)
   * [А есть что-то про CMake?](#а-есть-что-то-про-cmake)
@@ -32,7 +33,8 @@
 
 - Если [Docker](https://www.docker.com/) не установлен в системе, [установите его](#как-использовать-docker).
 - Если [Git](https://git-scm.com/) не установлен в системе, [установите его](https://git-scm.com/book/ru/v2/Введение-Установка-Git).
-- Склонируйте репозиторий: `git clone https://github.com/artiomn/cpp-network-tasks.git`
+- Склонируйте репозиторий: `git clone https://github.com/artiomn/cpp-network-tasks.git`.
+  **Внимание: склонируйте репозиторий в каталог, содержащий только латинские символы в пути!**
 - Зайдите в каталог `cpp-network-tasks`.
 - Запустите скрипт `./build_dockerized.sh`
 
@@ -200,6 +202,39 @@ artiomn/gb-qt-creator-image
 
 Под Windows сборка была проверена на MSVS 2019 и собранные артефакты будут находиться в `src\out\build\windows-default\bin`.
 Собираться под Windows будет не всё, есть примеры только под Linux.
+
+[К оглавлению ⮐](#repository-with-a-code-for-the--students)
+
+
+### Сборка не проходит, вообще не собирается ничего
+
+Может быть несколько причин из-за которых не проходит сборка.
+Для начала, убедитесь, что у вас:
+
+- Правильно настроен и работает Docker.
+- Если это первая сборка, есть доступ в Интернет.
+
+Далее, проверьте, что каталог в котором производится сборка, не содержит в пути не латинских символов, пробелов и спецсимволов.
+
+**Не делайте каталог вида**: `~/Общедоступные/user/geekbrains/lessons/C++-network/Programming_Lessons & Code/Репозиторий!/cpp-network-tasks`.  
+Для **большинства сборок** - это верный путь к проблемам, о которых не знали разработчики.
+
+Положите репозиторий в каталог с нормальным именем, например `~/projects/cpp-network-tasks`.
+
+Если вы уже собирали проект локально и хотите собрать его в Docker или, наоборот, собирали в Docker и хотите собрать локально, CMake выдаст ошибку, похожую на следующую:
+
+```
+CMake Error: The current CMakeCache.txt directory /home/user/projects/cpp-network-tasks/build/CMakeCache.txt is different than the directory /usr/src/gb/build where CMakeCache.txt was created. This may result in binaries being created in the wrong place. If you are not sure, reedit the CMakeCache.txt
+CMake Error: The source "/home/artiom/user/cpp-network-tasks/src/CMakeLists.txt" does not match the source "/usr/src/gb/src/CMakeLists.txt" used to generate cache.  Re-run cmake with a different source directory.
+```
+
+Что говорит о том, что конфигурации CMake различаются, вы запускаете его в разном окружении.
+
+Чтобы исправить это, удалите каталог `build` и запустите сборку заново:
+
+```
+➭ rm -rf build && ./build_dockerized.sh
+```
 
 [К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
@@ -400,6 +435,9 @@ Receiving packet 0 from "google.com" response with id = 29, time = 15.5ms
 
 - `./run`
 - `docker-compose run --rm gb` - для тех, кто пользуется docker-compose.
+
+**Обратите внимание:** консоль запускается через **скрипт `./run`** в корне репозитория, **не** через `docker run`.
+
 
 [К оглавлению ⮐](#repository-with-a-code-for-the--students)
 
