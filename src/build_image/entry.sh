@@ -3,6 +3,8 @@
 SCRIPT_PATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 SOURCE_PATH="${SOURCE_PATH:-/usr/src/gb}"
 USER_NAME="${USER_NAME:-developer}"
+EXT_UID=${EXT_UID:-0}
+
 export DISPLAY=":0"
 
 if [ "${EXT_UID}" -ne 0 ]; then
