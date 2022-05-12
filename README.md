@@ -231,7 +231,7 @@ CMake Error: The source "/home/artiom/user/cpp-network-tasks/src/CMakeLists.txt"
 
 Что говорит о том, что конфигурации CMake различаются, вы запускаете его в разном окружении.
 
-Чтобы исправить это, удалите каталог `build` и запустите сборку заново:
+Чтобы исправить это, **удалите каталог `build`** и запустите сборку заново:
 
 ```
 ➭ rm -rf build && ./build_dockerized.sh
