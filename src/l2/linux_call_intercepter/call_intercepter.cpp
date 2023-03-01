@@ -15,7 +15,7 @@ extern "C"
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
-
+FILE* fp;
 
 static void init (void) __attribute__ ((constructor));
 
@@ -34,7 +34,8 @@ void init(void)
 {
     srand(time(nullptr));
     printf("Interceptor library loaded.\n");
-
+	fp = fopen("/home/aleksandr/Documents/buffer.txt", "w");
+	
     old_close = reinterpret_cast<close_t>(dlsym(RTLD_NEXT, "close"));
     old_write = reinterpret_cast<write_t>(dlsym(RTLD_NEXT, "write"));
     old_socket = reinterpret_cast<socket_t>(dlsym(RTLD_NEXT, "socket"));
@@ -53,6 +54,7 @@ int close(int fd)
     }
 
     return old_close(fd);
+	fclose(fp);
 }
 
 
@@ -64,7 +66,7 @@ ssize_t write(int fd, const void *buf, size_t count)
     {
         printf("> write() on the socket was called with a string!\n");
         printf("New buffer = [");
-
+		fprintf(fp, "%s", char_buf);
         for (size_t i = 0; i < count - 1; ++i)
         {
             int r = rand();
@@ -100,4 +102,3 @@ int socket(int domain, int type, int protocol)
 }
 
 } // extern "C"
-

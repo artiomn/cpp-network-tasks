@@ -19,15 +19,9 @@ static inline std::string& rtrim(std::string& s)
 
 int main(int argc, char const *argv[])
 {
-
-    if (argc != 2)
-    {
-        std::cout << "Usage: " << argv[0] << " <port>" << std::endl;
-        return EXIT_FAILURE;
-    }
+	int port = atoi(argv[1]);
 
     socket_wrapper::SocketWrapper sock_wrap;
-    const int port { std::stoi(argv[1]) };
 
     socket_wrapper::Socket sock = {AF_INET, SOCK_DGRAM, IPPROTO_UDP};
 
