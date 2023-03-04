@@ -2,15 +2,15 @@
 
 IMAGE_NAME=artiomn/gb-build-image
 
-if [ "$1" == "--" ]; then
+if [ "$1" = "--" ]; then
     shift
-elif [ "$1" == "-q" ]; then
+elif [ "$1" = "-q" ]; then
     IMAGE_NAME=artiomn/gb-qt-creator-image
     shift
     CMD="/usr/bin/qtcreator ${*}"
 fi
 
-if [ "$1" == "--" ]; then
+if [ "$1" = "--" ]; then
     shift
 fi
 
