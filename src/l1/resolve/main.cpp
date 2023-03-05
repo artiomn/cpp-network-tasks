@@ -23,7 +23,7 @@ int print_ips_with_getaddrinfo(const std::string &host_name)
     {
         .ai_flags= AI_CANONNAME,
         // Неважно, IPv4 или IPv6.
-        .ai_family = AF_UNSPEC,
+        .ai_family = AF_INET6,
         // TCP stream-sockets.
         .ai_socktype = SOCK_STREAM,
         // Any protocol.
@@ -153,4 +153,3 @@ int main(int argc, const char *argv[])
 
     return EXIT_SUCCESS;
 }
-
