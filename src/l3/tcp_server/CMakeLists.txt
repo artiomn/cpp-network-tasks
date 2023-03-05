@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(tcp-server C CXX)
+project(tcp_server C CXX)
 
 set(${PROJECT_NAME}_SRC main.cpp)
 
