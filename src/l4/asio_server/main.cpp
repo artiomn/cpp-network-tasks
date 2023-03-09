@@ -1,136 +1,190 @@
-#include <ctime>
-#include <functional>
+#include <boost/asio.hpp>
+#include <cerrno>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <memory>
-#include <string>
-#include <boost/system/error_code.hpp>
-#include <boost/asio.hpp>
-
-
+#include <thread>
+#include <utility>
 using boost::asio::ip::tcp;
-const int echo_port = 1300;
-
-std::string make_daytime_string()
-{
-    using namespace std; // time_t, time и ctime;
-    time_t now = time(0);
-    return ctime(&now);
-}
-
-
-// Указатель shared_ptr и enable_shared_from_this нужны для того,
-// чтобы сохранить объект tcp_connection до завершения выполнения операции.
-class TcpConnection : public std::enable_shared_from_this<TcpConnection>
-{
+class session : public std::enable_shared_from_this<session> {
 public:
-    typedef std::shared_ptr<TcpConnection> pointer;
-
-    static pointer create(boost::asio::io_context& io_context)
-    {
-        return pointer(new TcpConnection(io_context));
-    }
-
-    tcp::socket& socket()
-    {
-        return socket_;
-    }
-
-    // В методе start(), вызывается asio::async_write(), отправляющий данные клиенту.
-    // Здесь используется asio::async_write(), вместо ip::tcp::socket::async_write_some(), чтобы весь блок данных был гарантированно отправлен.
-    void start()
-    {
-        // The data to be sent is stored in the class member message_ as we need to keep the data valid until the asynchronous operation is complete.
-        message_ = make_daytime_string();
-        auto s = shared_from_this();
-
-        // Здесь вместо boost::bind используется std::bind, чтобы уменьшить число зависимостей от Boost.
-        // Он не работает с плейсхолдерами из Boost.
-        // В комментариях указаны альтернативные плейсхолдеры.
-        boost::asio::async_write(socket_, boost::asio::buffer(message_),
-            // handle_write() выполнит обработку запроса клиента.
-            [s] (const boost::system::error_code& error, size_t bytes_transferred)
-            {
-                s->handle_write(error, bytes_transferred);
-            }
-    );
-    }
+  session(tcp::socket &&socket) : socket_(std::move(socket)) {}
+  void start() 
+  {
+    do_read();
+  }
 
 private:
-    TcpConnection(boost::asio::io_context& io_context)
-        : socket_(io_context)
-    {
-    }
-
-    void handle_write(const boost::system::error_code& /*error*/, size_t bytes_transferred)
-    {
-		std::cout << "Bytes transferred: " << bytes_transferred << std::endl;
-    }
-
-private:
-    tcp::socket socket_;
-    std::string message_;
-};
-
-
-class TcpServer
-{
-public:
-    // В конструкторе инициализируется акцептор, начинается прослушивание TCP порта.
-    TcpServer(boost::asio::io_context& io_context) :
-        io_context_(io_context),
-        acceptor_(io_context, tcp::endpoint(tcp::v4(), echo_port))
-    {
-        start_accept();
-    }
-
-private:
-    // Метод start_accept() создаёт сокет и выполняет асинхронный `accept()`, при соединении.
-    void start_accept()
-    {
-        TcpConnection::pointer new_connection = TcpConnection::create(io_context_);
-
-        acceptor_.async_accept(new_connection->socket(),
-            [this, new_connection] (const boost::system::error_code& error)
-            {
-                this->handle_accept(new_connection, error);
-            }
-        );
-    }
-
-    // Метод handle_accept() вызывается, когда асинхронный accept, инициированный в start_accept() завершается.
-    // Она выполняет обработку запроса клиента и запуск нового акцептора.
-    void handle_accept(TcpConnection::pointer new_connection, const boost::system::error_code& error)
-    {
-        if (!error)
+  void do_read() /*читаем и разбираем запрос. Если клиент присылает EXIT - сервер останавливает свою работу */
+  {
+    auto self(shared_from_this());
+    socket_.async_read_some(
+        boost::asio::buffer(data_,
+                            max_length), /*читаем запрос масимум 1024 символа*/
+        [this, self](boost::system::error_code ec,
+                     std::size_t length) /*захватываем this для использования
+                                            членов класса*/
         {
-            new_connection->start();
-        }
+          const std::string out = "EXIT";
+          if (!ec) {
+            std::string input_str;
+            data_[length] = '\0';
+            input_str = data_;
+            if (*(input_str.end() - 1) != ' ')
+              input_str += ' '; /* разделитель - знак пробела*/
+            std::cout << input_str << "symbol"
+                      << std::endl; /*отладочная информация*/
+            std::string::size_type name_length = input_str.find(' ');
+            if (name_length == std::string::npos) {
+              std::cout << "File name is not defined"
+                        << std::endl; /*нет имени файла - нечего читать*/
+            }
+            filename_ = input_str.substr(0, name_length);
+            std::string::size_type bytes_length =
+                input_str.find(' ', name_length + 1);
+            if (bytes_length == std::string::npos) {
+              std::cout << "Bytes shift is not defined" << std::endl;
+              bytes_shift_ = 0;
+            } else {
+              std::string bytes_shift =
+                  input_str.substr(name_length + 1, bytes_length - name_length);
+              bytes_shift_ = std::stoi(bytes_shift);
+              std::string::size_type bytes_for_transmission_length =
+                  input_str.find(' ', bytes_length + 1);
+              if (bytes_for_transmission_length == std::string::npos) {
+                std::cout << "Size for transmission is not defined"
+                          << std::endl;
+                bytes_for_transmission_ = 0;
+              } else {
+                bytes_for_transmission_ = std::stoi(input_str.substr(
+                    bytes_length + 1,
+                    bytes_for_transmission_length - bytes_length));
+              }
+            }
+            std::cout << filename_ << ' ' << bytes_shift_ << ' '
+                      << bytes_for_transmission_ << std::endl;
+            if (!send_file())
+              std::cout << "File is not exist" << std::endl;
+          }
+          if (filename_ != out)
+            do_read(); //продолжаем читать
+          else {
+            socket_.close(ec);
+            std::cout << "Session is closed" << std::endl;
+            throw("Exit filename");// выбрасываем исключение, по которому остановим работу сервера
+          }
+        });
+  }
 
-        start_accept();
+  bool send_file() /*передача заданного фрагмента файла со  смещением и файла
+                      целиком, в зависимости от запроса*/
+  {
+    auto self(shared_from_this());
+    std::vector<char> buffer(max_length);
+    auto path = std::filesystem::current_path().string();
+    path += filename_;
+    std::ifstream file_stream(path, std::ifstream::binary);
+    if (!file_stream)
+      return false;
+    std::cout << "Sending file " << filename_ << "..." << std::endl;
+    std::string buffer_string;
+    if (bytes_for_transmission_ != 0) {
+      for (int i = bytes_shift_ / buffer.size(); (i > 0) && (file_stream);
+           --i) /*вычитываю сдвиг*/
+      {
+        file_stream.read(&buffer[0], buffer.size());
+      }
+      int count = bytes_shift_ % buffer.size();
+      file_stream.read(&buffer[0], count);
+      for (count = bytes_for_transmission_ / buffer.size(); count > 0;
+           --count) {
+        file_stream.read(&buffer[0], buffer.size());
+        auto number_of_bytes = file_stream.gcount();
+        boost::asio::async_write(
+            socket_, boost::asio::buffer(buffer, number_of_bytes),
+            [this, self, number_of_bytes](boost::system::error_code ec,
+                                          std::size_t /*length*/) {
+              if (!ec) {
+                std::cout << number_of_bytes << std::endl;
+              }
+            });
+      }
+
+      count = bytes_for_transmission_ % buffer.size();
+      file_stream.read(&buffer[0], count);
+      auto number_of_bytes = file_stream.gcount();
+      boost::asio::async_write(
+          socket_, boost::asio::buffer(buffer, number_of_bytes),
+          [this, self, number_of_bytes](boost::system::error_code ec,
+                                        std::size_t /*length*/) {
+            if (!ec) {
+              std::cout << number_of_bytes << std::endl;
+            }
+          });
+    } else {
+      while (file_stream) {
+        file_stream.read(&buffer[0], buffer.size());
+        auto number_of_bytes = file_stream.gcount();
+        boost::asio::async_write(
+            socket_, boost::asio::buffer(buffer, number_of_bytes),
+            [this, self, number_of_bytes](boost::system::error_code ec,
+                                          std::size_t /*length*/) {
+              if (!ec) {
+                std::cout << number_of_bytes << std::endl;
+              }
+            });
+      }
     }
-
-private:
-    boost::asio::io_context& io_context_;
-    tcp::acceptor acceptor_;
+    file_stream.close();
+    return true;
+  }
+  tcp::socket socket_;
+  enum { max_length = 1024 };
+  char data_[max_length];
+  std::string filename_;
+  int bytes_shift_ = 0;
+  int bytes_for_transmission_ = 0;
 };
 
+class server {
+public:
+  server(boost::asio::io_context &io_context, short port)
+      : acceptor_(io_context, tcp::endpoint(tcp::v4(), port)) {
+    do_accept();
+  }
 
-int main()
-{
-    try
-    {
-	    // io_context предоставляет службы ввода-вывода, которые будет использовать сервер, такие как сокеты.
-        boost::asio::io_context io_context;
-        TcpServer server(io_context);
+private:
+  void do_accept() {
+    acceptor_.async_accept(
+        [this](boost::system::error_code ec, tcp::socket socket) {
+          if (!ec) {
+            auto s = std::make_shared<session>(std::move(socket));
+            s -> start();
+          }
+        });
+  }
+  tcp::acceptor acceptor_;
+};
 
-        // Запуск асинхронных операций.
-        io_context.run();
+int main(int argc, char *argv[]) {
+  try {
+    if (argc != 2) {
+      std::cerr << "Usage: async_tcp_echo_server <port>\n";
+      return 1;
     }
-    catch (const std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
 
-    return EXIT_SUCCESS;
+    boost::asio::io_context io_context;
+
+    server s(io_context, std::atoi(argv[1]));
+
+    io_context.run();
+  } cat
+ch (char const *s) {
+    std::cout << s << std::endl;
+  } catch (std::exception &e) {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+
+  return 0;
 }
-
