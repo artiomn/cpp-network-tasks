@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(cpp-network-lesson-5)
+project(home_work_5 C CXX)
+
 
 
 if (UNIX)
-# To build this lesson code on Windows, libraries must be installed manually.
-    add_subdirectory("qt_broadcastsender")
-    add_subdirectory("qt_broadcastreceiver")
-    add_subdirectory("phistache-example")
-    add_subdirectory("poco-examples")
-    add_subdirectory("gio_client")
-    add_subdirectory("gio_server")
+    add_subdirectory(asio_server)
+    add_subdirectory(asio_client)
+    add_subdirectory(chat_as_client)
+    add_subdirectory(chat_as_server)
+    add_subdirectory(HTTP_server)
 endif()
+
